@@ -1,0 +1,249 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>Inscripción Colaboradores San Ignacio</title>
+<style>
+  :root { --morado:#5b3f8c; --verde:#1e8e3e; --rojo:#c5221f; }
+  * { box-sizing:border-box; }
+  body { margin:0; font-family:Arial, Helvetica, sans-serif; background:#efeaf6; color:#202124; }
+  .caja { max-width:520px; margin:0 auto; min-height:100vh; background:#fff; padding:22px 18px 30px; }
+  .barra { height:10px; background:var(--morado); margin:-22px -18px 18px; }
+  .logo { display:block; margin:0 auto 10px; max-width:230px; max-height:90px; width:auto; height:auto; }
+  h1 { font-size:20px; text-align:center; color:var(--morado); margin:6px 0 4px; }
+  .sub { text-align:center; font-size:15px; color:#5f6368; margin:0 0 18px; }
+  .avance { display:flex; gap:6px; margin:0 0 16px; }
+  .avance span { flex:1; height:8px; border-radius:4px; background:#e3dcef; }
+  .avance span.on { background:var(--morado); }
+  .paso { background:#f3effa; border-left:5px solid var(--morado); padding:12px 14px; border-radius:8px; font-size:17px; margin-bottom:16px; }
+  label { display:block; font-weight:bold; font-size:18px; margin-bottom:8px; }
+  input[type=text] { width:100%; font-size:24px; text-align:center; padding:14px 10px; border:3px solid #c9bfdc; border-radius:12px; outline:none; }
+  #rut { font-size:30px; letter-spacing:1px; }
+  input.ok { border-color:var(--verde); background:#eef8f0; }
+  input.mal { border-color:var(--rojo); background:#fdeeee; }
+  .ayuda { font-size:15px; color:#5f6368; margin:8px 0 0; }
+  .estado { min-height:56px; font-size:19px; font-weight:bold; text-align:center; margin:14px 0 6px; padding:12px; border-radius:10px; }
+  .estado.ok { color:var(--verde); background:#eef8f0; }
+  .estado.mal { color:var(--rojo); background:#fdeeee; }
+  .estado.info { color:var(--morado); background:#f3effa; }
+  .teclak { display:block; width:100%; margin-top:10px; font-size:18px; padding:12px; border:2px dashed var(--morado); background:#fff; color:var(--morado); border-radius:12px; }
+  button.sig { display:block; width:100%; margin-top:12px; font-size:22px; font-weight:bold; padding:18px; border:0; border-radius:14px; background:var(--morado); color:#fff; }
+  button.sig:disabled { background:#bdb5cb; }
+  .dos { display:flex; gap:12px; }
+  .dos button { flex:1; font-size:26px; font-weight:bold; padding:22px 0; border-radius:14px; border:3px solid var(--morado); background:#fff; color:var(--morado); }
+  .foto { border:3px dashed #c9bfdc; border-radius:14px; padding:14px; margin-bottom:14px; text-align:center; }
+  .foto.ok { border-color:var(--verde); background:#eef8f0; }
+  .foto h3 { margin:0 0 6px; font-size:20px; color:var(--morado); }
+  .foto p { margin:0 0 10px; font-size:15px; color:#5f6368; }
+  .foto svg { display:block; margin:0 auto 10px; }
+  .foto img.prev { display:block; max-width:100%; max-height:180px; margin:0 auto 10px; border-radius:8px; }
+  .foto label.btn { display:inline-block; font-size:19px; font-weight:bold; padding:14px 18px; border-radius:12px; background:var(--morado); color:#fff; margin:0; }
+  .foto input { display:none; }
+  .atras { display:block; margin:16px auto 0; background:none; border:0; color:#5f6368; font-size:16px; text-decoration:underline; }
+  .pie { text-align:center; font-size:12px; color:#80868b; margin-top:28px; }
+  [hidden] { display:none !important; }
+</style>
+</head>
+<body>
+<div class="caja">
+  <div class="barra"></div>
+  <img id="logo" class="logo" alt="" hidden>
+  <h1 id="titulo">Ficha de Inscripción de Colaboradores</h1>
+  <p class="sub">Integra Prevención SpA</p>
+  <div class="avance"><span id="a1" class="on"></span><span id="a2"></span><span id="a3"></span><span id="a4"></span></div>
+
+  <!-- PASO 1: RUT -->
+  <section id="p1">
+    <div class="paso">👉 <b>Paso 1:</b> escriba su RUT. Los puntos y el guion se ponen solos.</div>
+    <label for="rut">Su RUT</label>
+    <input type="text" id="rut" autocomplete="off" autocapitalize="characters" spellcheck="false" inputmode="numeric" placeholder="12.345.678-9" maxlength="12">
+    <p class="ayuda">Escriba solo números. Si su RUT termina en K, toque el botón de abajo.</p>
+    <button type="button" class="teclak" id="k">Mi RUT termina en K</button>
+    <div class="estado" id="estado"></div>
+    <button class="sig" id="sig1" disabled>Siguiente ➜</button>
+  </section>
+
+  <!-- PASO 2: NOMBRE -->
+  <section id="p2" hidden>
+    <div class="paso">👉 <b>Paso 2:</b> escriba su nombre completo: todos sus nombres y sus dos apellidos.</div>
+    <label for="nombre">Nombre completo</label>
+    <input type="text" id="nombre" autocomplete="name" autocapitalize="words" placeholder="Ej: Juan Andrés Pérez Soto">
+    <div class="estado" id="estado2"></div>
+    <button class="sig" id="sig2" disabled>Siguiente ➜</button>
+    <button class="atras" data-ir="1">← Volver</button>
+  </section>
+
+  <!-- PASO 3: LICENCIA -->
+  <section id="p3" hidden>
+    <div class="paso">👉 <b>Paso 3:</b> ¿tiene licencia de conducir?</div>
+    <div class="dos"><button id="siLic">SÍ</button><button id="noLic">NO</button></div>
+    <button class="atras" data-ir="2">← Volver</button>
+  </section>
+
+  <!-- PASO 4: FOTOS -->
+  <section id="p4" hidden>
+    <div class="paso">👉 <b>Paso 4:</b> saque <b>2 fotos</b> de su licencia: una del <b>FRENTE</b> (donde está su foto) y otra del <b>REVERSO</b> (la parte de atrás).</div>
+    <div class="foto" id="cajaF">
+      <h3>1. FRENTE de la licencia</h3>
+      <p>El lado donde está su cara</p>
+      <svg width="170" height="104" viewBox="0 0 170 104"><rect x="2" y="2" width="166" height="100" rx="10" fill="#fff" stroke="#5b3f8c" stroke-width="3"/><rect x="12" y="18" width="44" height="56" rx="4" fill="#e3dcef"/><circle cx="34" cy="38" r="11" fill="#5b3f8c"/><path d="M16 72 q18 -22 36 0" fill="#5b3f8c"/><rect x="66" y="22" width="88" height="8" rx="3" fill="#c9bfdc"/><rect x="66" y="38" width="70" height="8" rx="3" fill="#c9bfdc"/><rect x="66" y="54" width="80" height="8" rx="3" fill="#c9bfdc"/><rect x="12" y="84" width="140" height="8" rx="3" fill="#e3dcef"/></svg>
+      <img class="prev" id="prevF" alt="" hidden>
+      <label class="btn" for="fotoF">📷 Tomar foto del FRENTE</label>
+      <input type="file" id="fotoF" accept="image/*" capture="environment">
+    </div>
+    <div class="foto" id="cajaR">
+      <h3>2. REVERSO de la licencia</h3>
+      <p>La parte de atrás</p>
+      <svg width="170" height="104" viewBox="0 0 170 104"><rect x="2" y="2" width="166" height="100" rx="10" fill="#fff" stroke="#5b3f8c" stroke-width="3"/><rect x="12" y="16" width="146" height="8" rx="3" fill="#c9bfdc"/><rect x="12" y="32" width="120" height="8" rx="3" fill="#c9bfdc"/><rect x="12" y="48" width="134" height="8" rx="3" fill="#c9bfdc"/><g fill="#5b3f8c"><rect x="12" y="70" width="3" height="22"/><rect x="18" y="70" width="2" height="22"/><rect x="23" y="70" width="4" height="22"/><rect x="30" y="70" width="2" height="22"/><rect x="35" y="70" width="3" height="22"/><rect x="41" y="70" width="2" height="22"/><rect x="46" y="70" width="4" height="22"/><rect x="53" y="70" width="2" height="22"/><rect x="58" y="70" width="3" height="22"/></g></svg>
+      <img class="prev" id="prevR" alt="" hidden>
+      <label class="btn" for="fotoR">📷 Tomar foto del REVERSO</label>
+      <input type="file" id="fotoR" accept="image/*" capture="environment">
+    </div>
+    <div class="estado info" id="estado4">Que se vea completa y se puedan leer las letras.</div>
+    <button class="sig" id="sig4" disabled>Subir fotos y seguir ➜</button>
+    <button class="atras" data-ir="3">← Volver</button>
+  </section>
+
+  <p class="pie">Creado por Daniel Zunino · Integra Prevención SpA</p>
+</div>
+
+<script>
+const EMPRESAS = {"lacteos": {"nombre": "LACTEOS SAN IGNACIO", "form": "1FAIpQLSe-HU-mRvM0mXYGolJJHJwA76dVv1bx-sc8lJ3ZkteKQfKdhg", "logo": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAA0JCgsKCA0LCgsODg0PEyAVExISEyccHhcgLikxMC4pLSwzOko+MzZGNywtQFdBRkxOUlNSMj5aYVpQYEpRUk//2wBDAQ4ODhMREyYVFSZPNS01T09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT0//wAARCABDAKoDASIAAhEBAxEB/8QAGwAAAgIDAQAAAAAAAAAAAAAAAAYEBQECAwf/xABEEAACAQMBBAYFBwoFBQAAAAABAgMABBEFBhIhMRNBUWFxgQcUIqGxFTIzQlKRohYjQ1NiY3KSssE0gpOU0SRzhKPC/8QAGQEAAwEBAQAAAAAAAAAAAAAAAAECAwQF/8QAIREAAgICAgMBAQEAAAAAAAAAAAECEQMSITEyQVEiE2H/2gAMAwEAAhEDEQA/APTqKK4Xl5bWVu093MkMS82c4FAHetWZVUsxAA5kngKWLzaS5lcRWEBh6QZR50ZpHHakI9ojvbArguhalqZEmoOxHbeN0hHhCmEHmWq9PpO3wuZ9o9MRzFDO11KP0dqhlP4eA8zVbcbVuH3ILOONuoXNwob+RN5qnw7N2SxhLlpblRyR23Yx4IuF91Wlva29qu5bQRQr2RoFHuouC9WFSYsfKO0F19CjqDy6GxI/FKy/Cs+obQ3H0k90v8d4kfujQ/GmieWOCF5pXVERSzM3AADrpRm9IFmbnobGwurvsZQBveA51pHaXjEl0u2dfyav5fp7iI5579xcSf8A2tbfkcrcXksz/wCKzf1SGu2h7YWWsX/qSW88ExUlRJggkcxw66ZM1Mp5IunwNKMuUKv5GQ/rLP8A2K/81j8i4eqSz/2QHwYU15GKMip/rP6PSPwVDslLH9DNag/srNH/AEyVj5F1qH6G5fHZHqEg9zqwpsBzWaf9Jew0Qo7+0ttxJu3A+1DDOPwlG91ZG019bMFvYLYn9ovbN90g3fxU24HZWGVWUqwBB6jyo3T7Qav0yki2msyge7hubVT+kkj3o/50yvvq1tru3u4ultZ45oz9aNgw91QptB06RzJHb+ryn9JbMYm/DjPnVVc7MTRSmezmSST7R/MS/wCpHwP+ZTSqD64D9IaaKUYtZ1XTZVhvUaYE4CXG7FIf4ZB+bfw9k0wadqtpqG8sLss0f0kMilJE8VPHz5UnFoakmTqKBRUjK7VtUXTokVIzPdTHdggU4Lnx6gOZPVS9ZWF5rd0L2a4DAHhdBcqvaLdDwA/eHJPVWIkOt6qXdiUuy44H5trG27ujs6R+fcKcURURVRQqgYAAwAK08OPZHkRrHTrWwQrbRBWfi7klnc9rMeJ86lYrNFZvksoNb2r03RbkW1z00k+6G3IkzgHlknAqqX0jaaWw1ndhe0bp/vW/pHsrdtEW8MS+sRSookxx3TzGeykDQYEuddsIJVDxyToGU8iM8q7cWHHLHsznnOSlSPTNW1PS9W2Qnna89XtrkdGsjoeDZ5Y6+I6uqvO3s9Z0C4W7QSw8PYuYvaRwexuRB769R1/TdPvtGe1vZEtoFwVkyFEZHIjq8qRhY4tX0222zszaEYMTMQMdnP8AvU4JpRa9DyK2dNmte9a1SWS6tbMai0DmK8K7nELn2+rHfVfqOqXTWfrJ2huZ77pcGO3LCJFwevAGfCrrQ9nNDuLPUIItVFzc9FuPOq4SIHjwzwPLic91RbfZkNp17a/lJYm3jYSuqYKh+QLHPAeFabY9myalVA+0GtSbGJdrflJI7owO4Ub7qQCOPVjj41X+t67Nsw998qTerxXO4y9I2+SccS3Z3VaWGypvtGezstoLaYGYSSRxjeQEDAPPIPurtdbPppuz0mlXmv2cLSzrNh1xwA5c888HPdQp41wvvz0FSfZbej3U7rUNKnS8maZ4Jd1Xc5YqRnBPX102Uo7D6T8nJcSQ6tbXsEuMpAOCsOsnOeXVTDe6rYafgXt5BATyDuAT5Vy5aeR6m0OIqyaaxmq86nHe2E8mjT211OqHcUSDG91A9lKOmaltM2vQR6lf2cEbSAPC8kftDsVVJOeylHG3f+A5JD/RUe6vLayi6W6nihT7UjBRXCz1nTb+To7O+t5n+yjgn7qinVlWiXNBFPE0U8ayRuMMjDIPlS3qez7wbs9h0rpDxSNXxLD/ANpz1fsNlT3U0DlQRwoUmugaTKDQ9ba4dLS8dGlcEwzqu6s4HMYPzXH1l86vs0sbQ6du3ccls3Rm7cAMP0dyoJjkHjgqe3Irva7V6bJawvPL0crIpdPstjiPvqpRvmJKdcMgbLkW17awy8HFtJanukilJI81YGnAcqVtoNOktp31G2LiJ2WSbo13mhkUYWZR18ODDrWrTR9Ziv1WKUpHdbm9uK2VkX7aH6yn3cjTmtv0hx44LWigHNFZlCn6R5AuzO6Txe4QD3n+1efbNME2k01mOALhOfjXom0myL65eC5+UpYsKAImXfQd4GRjNU8fo2cMDJqox+zDx+NduHJjjj1bOecJOdpEX0mdN8qWu9MDD0XsxBuKtniSO/hx7qgahCt/o2l2mn6PdLewqROy2zDe4duOOTxrXbCxSx1i3s2MwRIUQ3M7FukHb5ZxgdlRtQFxaWiMu0kV0uQFihuJCQPA8q1xr8RpkS8nwXF9s6+mbCSS3yGO7M6yFVbqJCgN1HAz4Zqr2b0eLVrbU+lmkjFtB0iqnJmGcZHXjHvq12f0jV9odDmt7i/nhsxIrRdIpcSHjnmc4HDuzV3pOxU2nW99Guqtm7hMWUiwF48+J8R5moeVRjKLfNlKFtNLgUthZhFtNC7PuIYpN85wN0Lnj92fKsxPpjT6j0FveavPJFIVmkUKEHMvjJJx28PCmHT/AEfSWt2kr6oCgBVljiwWUjBXJPWOFEHo/mt7tjFq7xwOpRtyPDsh5qTnFOWXG5OViUJJVQt7GXctnrTSQkk+rSkr1PurvAHzFR9E9X1XaKE61OzJcMTI5fG8xHAZ6hnhThpewPqWqJcy6gXiifeRUTdZu4nPLtxzrTVfR4k9y8um3awI5yYpE3gvgR1d1DzY3J89rsFjlSI+n7GSQbQSob2JbJ1cbscxErxkcsDy491KmhoF2ksUHVdoM/56fdH2I+TVmnGoN688TRxTImBDnrAPM1Wxeju8jnWRdWjQq28HWI7wPbz51Mc0edpehvG+KQu69fvqW00rXzMYY7jowmfmIGwQOzhW21enx6LtC8ViWjj3VlhIbiuew+INOOu7Cx6jObq1uuiuHA6XfXKyNji3DkTUey2AZ7pJtY1A3KoANxM8QOQLHjjuFVHPBJO+l0J45fBq0G6lvtEsrq4GJZYVZuHM45+fOrCtURI41RFCqoAAA4AVHv7+3sIOluHIyd1FUZZ26lUcya4Hy+Dp6RA2ilQeoRMwBa6SQk/VSPLsfDA99efrspqV8ovI1ZUuB0qjsDcR8aZkiuNodSlEo3Yvo7gq2VhjznoFI4F2ON8jgBwpxVd1QqjAAwAOqto5Hi4RDjsZIFLup7Nhy0umFIjv9IYGJEZb7SkcY27159YNMdFYqTXRbVijBr1/pkq22pxM3UBOVSQ/wv8AMk+9T3Ve2utWNzIIum6Gc/oZwY3+48/LNTZoIp42imjWSNuBR1BB8jVLdbL2jxlLOSS2T9Vwki/kfIHliquL74FTRfZFYzwpTGk63p/+Dk30HIW85T/1yby/cRQdc1azGLy3OB1z2rx/ij31+FGl9MNvowCbTdSMlvv21y0Z9uM4bdPLiKh3Frs9p7b89rYQsFLZMS5AHXy5VCttqreRsG2VmP6i5jc/cSre6otwbK5vHuZZr6FZJUkdXsmYEKMKu8ARgH2gOWeYNNRadCbRcaZe73TT3twkAZd+O2YgGGIDgWHacgnsyBUq/wBTt7O3Mm+skhA6OJWG9ITwUAd5pTEOmrHGia5bxvk9JJJGQ7neDb5LfW4dw45xwFdDa28rPINodPMpWRllEi73SMcb/Pnu+yPsjlQ4KwtjVpzym1UXNxHNcj6Xo8YVjx3Rjs5VCn1+Jb71S2heeTKoCOALnJC58AzE9QHXmueltpen27LFe2SlgPZWcbowMDiTk+NVrJbrAIptT0x5HJme6M+HSY5BYDPEBSFA7uNJJWNvgnSbRbkCF1jiZrp7YuSXQFc8RjBOTwHea0n1q9fTbmeNIrdrOL88WG+DNjPRqM9pAJ78VX9DoUUclrFq1mbWRI0K7wd1CnJAI+0eJOOfHsxKt5dMR2AuLm7hFw9ysUdo5G+x3skge1gnh5dlVqvSFZfyX0Fraxy380VvvAZ32A9rHEDtqUrKyhlOQRkUv3O0ttEMtZzDHIztHCPxNn3VEO093cndsoIWP7pZLk/hUL+KpWOTHskNeRUW81GzsVBu7mOInkrN7TeA5nypc6HaO/8AnieND+slW3X+WPef8QqTZ7LbjFrm7KlvnLar0WfFyS5/mp6pdsNm+ka3+00nSCCzgZHf5pmQmRv4YR7R8W3RXO00O/v5vWdSklhDDDZcGdx9nI9mJf2U49ppgsdNstPjKWdtHCD84qOLeJ5nzqXS3S8Q1vs421tDaW6QW0SxRRjCogwAK7UUVBQUUUUAFFFFABWKKKGBFns7W64XNrBMD+sjDfGojbN6McsthHGe2ImP+kiiimmyaKLVbRLPPq812mOX/VSn4tSje6rqEZIW7kP8R3vjRRXZhV9mMiB8u6ln/EL/AKSf8V2t9a1J3AN0Rx+qqj4CiiuuUY69EWM2ktNeEC4urpgT1XDr8CKaYNntKmjDT27zH97PI/xY0UV52VtPg1gTINI0y1INtp9rGe1YlB+/FTV4DA5CiisW77NfZsKKKKQwooooAKKKKAP/2Q=="}, "agroex": {"nombre": "AGROEXPORTACIONES CHILE (AGROEX)", "form": "1FAIpQLSdRbX8GkuStC9gSzwgqLt7iE8ieoC5IxIpAUrnpCisEkFO8ig", "logo": "data:image/jpeg;base64,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"}, "inversiones": {"nombre": "INVERSIONES SAN IGNACIO", "form": "1FAIpQLSe7DcMoBre0EgsyF-vBz0PZBUbk1ETy6-6hHpLEAw_WwZWuNw", "logo": ""}, "agricola": {"nombre": "AGRICOLA SAN IGNACIO", "form": "1FAIpQLScfXoRMGTGOrtdLFAvE3vOx2OTCc6ohVI-WQYJ-futax50ZcQ", "logo": "data:image/jpeg;base64,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"}};
+const SUBIDA = 'https://script.google.com/macros/s/AKfycbxphUd6xHhCtjBet147Navm8I-FjGzG9g6x2zHXcO8hCVhhiz0JKRGGMV7cPdzaLmF3/exec';
+const E_RUT = 'entry.1814196582', E_NOMBRE = 'entry.1425061562', E_LIC = 'entry.1422363065';
+const clave = (new URLSearchParams(location.search).get('e') || '').toLowerCase();
+const emp = EMPRESAS[clave];
+const $ = id => document.getElementById(id);
+
+if (!emp) {
+  document.querySelector('.caja').innerHTML = '<div class="barra"></div><h1>Link incompleto</h1><p class="sub">Escanee nuevamente el código QR de su empresa.</p>';
+} else {
+  $('titulo').textContent = 'Ficha de Inscripción de Colaboradores ' + emp.nombre;
+  document.title = 'Inscripción ' + emp.nombre;
+  if (emp.logo) { $('logo').src = emp.logo; $('logo').hidden = false; }
+}
+
+function ir(n) {
+  [1, 2, 3, 4].forEach(i => { $('p' + i).hidden = i !== n; $('a' + i).className = i <= n ? 'on' : ''; });
+  window.scrollTo(0, 0);
+}
+document.querySelectorAll('[data-ir]').forEach(b => b.addEventListener('click', () => ir(Number(b.dataset.ir))));
+
+// ---------- RUT ----------
+const limpio = s => s.toUpperCase().replace(/[^0-9K]/g, '').replace(/K(?=.)/g, '');
+function dv(cuerpo) {
+  let s = 0, m = 2;
+  for (let i = cuerpo.length - 1; i >= 0; i--) { s += Number(cuerpo[i]) * m; m = m === 7 ? 2 : m + 1; }
+  const r = 11 - (s % 11);
+  return r === 11 ? '0' : r === 10 ? 'K' : String(r);
+}
+function formatear(c) {
+  if (c.length < 2) return c;
+  return c.slice(0, -1).replace(/\B(?=(\d{3})+(?!\d))/g, '.') + '-' + c.slice(-1);
+}
+let rutFinal = '', espera = null;
+function revisar() {
+  const inp = $('rut'), est = $('estado');
+  const c = limpio(inp.value).slice(0, 9);
+  inp.value = formatear(c);
+  rutFinal = ''; clearTimeout(espera);
+  inp.className = ''; est.className = 'estado'; est.textContent = '';
+  if (c.length >= 8) {
+    const cuerpo = c.slice(0, -1), d = c.slice(-1);
+    if (/^\d{7,8}$/.test(cuerpo) && dv(cuerpo) === d) {
+      rutFinal = formatear(c);
+      inp.className = 'ok'; est.className = 'estado ok'; est.textContent = '✅ RUT válido. Toque "Siguiente"';
+    } else {
+      const mostrar = () => { inp.className = 'mal'; est.className = 'estado mal'; est.textContent = '❌ RUT no válido. Revise los números'; };
+      if (c.length >= 9) mostrar(); else espera = setTimeout(mostrar, 1500);
+    }
+  }
+  $('sig1').disabled = !rutFinal;
+}
+$('rut').addEventListener('input', revisar);
+$('k').addEventListener('click', () => { const c = limpio($('rut').value); if (c && !c.endsWith('K')) $('rut').value = c + 'K'; revisar(); $('rut').focus(); });
+$('sig1').addEventListener('click', () => { if (rutFinal) { ir(2); $('nombre').focus(); } });
+
+// ---------- NOMBRE ----------
+let nombreFinal = '';
+const LETRAS = /^[A-Za-zÁÉÍÓÚÜÑáéíóúüñ'´.\-]+$/;
+function revisarNombre() {
+  const t = $('nombre').value.replace(/\s+/g, ' ').trim();
+  const pal = t ? t.split(' ') : [];
+  const est = $('estado2'), inp = $('nombre');
+  nombreFinal = '';
+  inp.className = ''; est.className = 'estado'; est.textContent = '';
+  if (!t) { $('sig2').disabled = true; return; }
+  if (!pal.every(p => LETRAS.test(p))) { inp.className = 'mal'; est.className = 'estado mal'; est.textContent = '❌ Escriba solo letras, sin números'; }
+  else if (pal.length < 2 || pal.some(p => p.length < 2)) { est.className = 'estado info'; est.textContent = 'Escriba su nombre y sus dos apellidos'; }
+  else {
+    nombreFinal = pal.map(p => p.charAt(0).toUpperCase() + p.slice(1).toLowerCase()).join(' ');
+    inp.className = 'ok'; est.className = 'estado ok'; est.textContent = '✅ Toque "Siguiente"';
+  }
+  $('sig2').disabled = !nombreFinal;
+}
+$('nombre').addEventListener('input', revisarNombre);
+$('sig2').addEventListener('click', () => { if (nombreFinal) ir(3); });
+
+// ---------- LICENCIA ----------
+function alFormulario(lic) {
+  const q = 'usp=pp_url&' + E_RUT + '=' + encodeURIComponent(rutFinal) + '&' + E_NOMBRE + '=' + encodeURIComponent(nombreFinal) + '&' + E_LIC + '=' + lic;
+  location.href = 'https://docs.google.com/forms/d/e/' + emp.form + '/viewform?' + q;
+}
+$('noLic').addEventListener('click', () => alFormulario('NO'));
+$('siLic').addEventListener('click', () => ir(4));
+
+// ---------- FOTOS ----------
+const fotos = { F: null, R: null };
+function achicar(file) {
+  return new Promise((ok, mal) => {
+    const img = new Image();
+    img.onload = () => {
+      const max = 1600, k = Math.min(1, max / Math.max(img.width, img.height));
+      const c = document.createElement('canvas');
+      c.width = Math.round(img.width * k); c.height = Math.round(img.height * k);
+      c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+      ok(c.toDataURL('image/jpeg', 0.82));
+      URL.revokeObjectURL(img.src);
+    };
+    img.onerror = () => mal(new Error('imagen'));
+    img.src = URL.createObjectURL(file);
+  });
+}
+['F', 'R'].forEach(l => {
+  $('foto' + l).addEventListener('change', async ev => {
+    const f = ev.target.files[0]; if (!f) return;
+    try {
+      fotos[l] = await achicar(f);
+      $('prev' + l).src = fotos[l]; $('prev' + l).hidden = false;
+      $('caja' + l).className = 'foto ok';
+      document.querySelector('label[for=foto' + l + ']').textContent = '🔄 Cambiar foto';
+    } catch (e) { $('estado4').className = 'estado mal'; $('estado4').textContent = '❌ No se pudo leer la foto. Intente de nuevo'; }
+    $('sig4').disabled = !(fotos.F && fotos.R);
+    if (fotos.F && fotos.R) { $('estado4').className = 'estado ok'; $('estado4').textContent = '✅ Listas las 2 fotos. Toque "Subir fotos y seguir"'; }
+    else { $('estado4').className = 'estado info'; $('estado4').textContent = fotos.F ? 'Ahora saque la foto del REVERSO' : 'Ahora saque la foto del FRENTE'; }
+  });
+});
+async function subir(lado, dataUrl) {
+  const r = await fetch(SUBIDA, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+    body: JSON.stringify({ empresa: clave, rut: rutFinal, nombre: nombreFinal, lado, data: dataUrl.split(',')[1] }) });
+  const j = await r.json();
+  if (!j.ok) throw new Error(j.error || 'error');
+}
+$('sig4').addEventListener('click', async () => {
+  const b = $('sig4'), est = $('estado4');
+  b.disabled = true; est.className = 'estado info'; est.textContent = '⏳ Subiendo fotos, espere un momento...';
+  try {
+    await subir('Frente', fotos.F);
+    await subir('Reverso', fotos.R);
+    est.className = 'estado ok'; est.textContent = '✅ Fotos guardadas';
+    alFormulario('SI');
+  } catch (e) {
+    est.className = 'estado mal'; est.textContent = '❌ No se pudieron subir. Revise su internet y toque el botón de nuevo';
+    b.disabled = false;
+  }
+});
+</script>
+</body>
+</html>
