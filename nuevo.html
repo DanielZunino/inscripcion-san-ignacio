@@ -1,0 +1,411 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>Inscripción Colaboradores San Ignacio</title>
+<style>
+:root{--m:#5b3f8c;--m2:#f3effa;--v:#1e8e3e;--r:#c5221f;--g:#5f6368}
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,Helvetica,sans-serif;background:#efeaf6;color:#202124}
+.caja{max-width:540px;margin:0 auto;min-height:100vh;background:#fff;padding:0 16px 40px}
+.top{position:sticky;top:0;background:#fff;padding:12px 0 10px;z-index:5;border-bottom:1px solid #eee}
+.logo{display:block;margin:4px auto 6px;max-width:170px;max-height:60px;width:auto;height:auto}
+.emp{text-align:center;font-size:14px;font-weight:bold;color:var(--m)}
+.sec{display:flex;justify-content:space-between;align-items:center;font-size:14px;color:var(--g);margin-top:8px}
+.barra{height:10px;background:#e3dcef;border-radius:5px;overflow:hidden;margin-top:6px}
+.barra i{display:block;height:100%;background:var(--m);width:0;transition:width .3s}
+.preg{font-size:23px;font-weight:bold;margin:22px 0 6px;line-height:1.25}
+.ayuda{font-size:16px;color:var(--g);margin:0 0 16px;line-height:1.35}
+.oir{background:var(--m2);border:0;border-radius:20px;padding:8px 14px;font-size:15px;color:var(--m);margin-bottom:14px}
+input[type=text],input[type=tel],input[type=email],input[type=date],select,textarea{width:100%;font-size:22px;padding:14px 12px;border:3px solid #c9bfdc;border-radius:12px;outline:none;background:#fff;font-family:inherit;color:#202124}
+textarea{min-height:110px}
+input.ok,textarea.ok,select.ok{border-color:var(--v);background:#eef8f0}
+input.mal,textarea.mal{border-color:var(--r);background:#fdeeee}
+.tel{display:flex;gap:8px;align-items:center}.tel span{font-size:22px;font-weight:bold;white-space:nowrap}
+.ops{display:grid;gap:10px}
+.ops.c2{grid-template-columns:1fr 1fr}.ops.c3{grid-template-columns:1fr 1fr 1fr}.ops.c4{grid-template-columns:repeat(4,1fr)}
+.op{font-size:19px;padding:16px 10px;border:3px solid #c9bfdc;border-radius:14px;background:#fff;color:#202124;text-align:center;font-family:inherit;line-height:1.2}
+.op.sel{border-color:var(--m);background:var(--m);color:#fff;font-weight:bold}
+.op.dest{border-color:var(--m)}
+.sub{font-size:15px;color:var(--g);margin:14px 0 8px;font-weight:bold}
+.tres{display:grid;grid-template-columns:1fr 1.6fr 1.2fr;gap:8px}.tres label{font-size:15px;color:var(--g);display:block;margin-bottom:4px}
+.estado{min-height:30px;font-size:18px;font-weight:bold;margin:12px 0 4px;padding:0 2px}
+.estado.ok{color:var(--v)}.estado.mal{color:var(--r)}.estado.info{color:var(--m)}
+.pie{display:flex;gap:10px;margin-top:18px}
+.btn{flex:1;font-size:21px;font-weight:bold;padding:17px 8px;border:0;border-radius:14px;background:var(--m);color:#fff;font-family:inherit}
+.btn:disabled{background:#bdb5cb}
+.btn.sec2{flex:0 0 32%;background:#fff;color:var(--m);border:3px solid var(--m)}
+.alt{display:block;width:100%;margin-top:10px;font-size:18px;padding:13px;border:2px dashed var(--m);background:#fff;color:var(--m);border-radius:12px;font-family:inherit}
+.foto{border:3px dashed #c9bfdc;border-radius:14px;padding:14px;margin-bottom:14px;text-align:center}
+.foto.ok{border-color:var(--v);background:#eef8f0}
+.foto h3{margin:0 0 4px;font-size:20px;color:var(--m)}.foto p{margin:0 0 8px;font-size:15px;color:var(--g)}
+.foto svg{display:block;margin:0 auto 8px}.foto img{display:block;max-width:100%;max-height:170px;margin:0 auto 8px;border-radius:8px}
+.foto label{display:inline-block;font-size:19px;font-weight:bold;padding:13px 16px;border-radius:12px;background:var(--m);color:#fff}
+.foto input{display:none}
+.res{border:2px solid #e3dcef;border-radius:12px;padding:4px 12px;margin-bottom:10px}
+.res div{display:flex;justify-content:space-between;gap:10px;padding:9px 0;border-bottom:1px solid #eee;font-size:16px}
+.res div:last-child{border:0}.res b{color:var(--g);font-weight:normal}.res span{text-align:right;font-weight:bold}
+.res a{color:var(--m);font-size:14px;margin-left:6px}
+.fin{text-align:center;padding:40px 6px}.fin .ic{font-size:72px}.fin h2{color:var(--v);font-size:26px}
+.creado{text-align:center;font-size:12px;color:#80868b;margin-top:30px}
+[hidden]{display:none!important}
+</style>
+</head>
+<body>
+<div class="caja">
+  <div class="top">
+    <img id="logo" class="logo" alt="" hidden>
+    <div class="emp" id="emp"></div>
+    <div class="sec"><span id="secT"></span><span id="secN"></span></div>
+    <div class="barra"><i id="barra"></i></div>
+  </div>
+  <div id="app"></div>
+  <p class="creado">Creado por Daniel Zunino · Integra Prevención SpA</p>
+</div>
+<script>
+const DATA = {"E":{"lacteos":{"nombre":"LACTEOS SAN IGNACIO","form":"1FAIpQLSe-HU-mRvM0mXYGolJJHJwA76dVv1bx-sc8lJ3ZkteKQfKdhg","inst":["Planta Bulnes","Sucursal Concepción","Sucursal Santiago"],"e":{"nombre":1425061562,"rut":1814196582,"dia":702037186,"mes":415941633,"anio":73946009,"nac":934852314,"genero":83863247,"civil":506603787,"inst":1899796162,"ingreso":785350727,"cargo":1433261574,"region":423813295,"com0":2054358716,"com1":958547936,"com2":244820079,"com3":1783095685,"com4":666342249,"com5":603688935,"com6":517183302,"com7":1296185179,"com8":2075318722,"com9":885898228,"com10":87107613,"com11":1370322683,"com12":1937577698,"com13":974152820,"com14":279720725,"com15":283293947,"ciudad":57666521,"dir":1938673626,"tel":590231459,"correo":95208040,"lic":1422363065,"clase":225773759,"venc":703213559,"afp":1138022361,"salud":1261421447,"disc":900744662,"enf":1389942676,"med":1956762901,"alerg":1799093772,"camisa":1665833166,"pantalon":1389432457,"calzado":973560806,"emNombre":594073274,"parent":1476899516,"emTel":239785631,"tipo":894280683,"banco":259410398,"cuenta":1639830544},"logo":"data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAA0JCgsKCA0LCgsODg0PEyAVExISEyccHhcgLikxMC4pLSwzOko+MzZGNywtQFdBRkxOUlNSMj5aYVpQYEpRUk//2wBDAQ4ODhMREyYVFSZPNS01T09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT0//wAARCABDAKoDASIAAhEBAxEB/8QAGwAAAgIDAQAAAAAAAAAAAAAAAAYEBQECAwf/xABEEAACAQMBBAYFBwoFBQAAAAABAgMABBEFBhIhMRNBUWFxgQcUIqGxFTIzQlKRohYjQ1NiY3KSssE0gpOU0SRzhKPC/8QAGQEAAwEBAQAAAAAAAAAAAAAAAAECAwQF/8QAIREAAgICAgMBAQEAAAAAAAAAAAECEQMSITEyQVEiE2H/2gAMAwEAAhEDEQA/APTqKK4Xl5bWVu093MkMS82c4FAHetWZVUsxAA5kngKWLzaS5lcRWEBh6QZR50ZpHHakI9ojvbArguhalqZEmoOxHbeN0hHhCmEHmWq9PpO3wuZ9o9MRzFDO11KP0dqhlP4eA8zVbcbVuH3ILOONuoXNwob+RN5qnw7N2SxhLlpblRyR23Yx4IuF91Wlva29qu5bQRQr2RoFHuouC9WFSYsfKO0F19CjqDy6GxI/FKy/Cs+obQ3H0k90v8d4kfujQ/GmieWOCF5pXVERSzM3AADrpRm9IFmbnobGwurvsZQBveA51pHaXjEl0u2dfyav5fp7iI5579xcSf8A2tbfkcrcXksz/wCKzf1SGu2h7YWWsX/qSW88ExUlRJggkcxw66ZM1Mp5IunwNKMuUKv5GQ/rLP8A2K/81j8i4eqSz/2QHwYU15GKMip/rP6PSPwVDslLH9DNag/srNH/AEyVj5F1qH6G5fHZHqEg9zqwpsBzWaf9Jew0Qo7+0ttxJu3A+1DDOPwlG91ZG019bMFvYLYn9ovbN90g3fxU24HZWGVWUqwBB6jyo3T7Qav0yki2msyge7hubVT+kkj3o/50yvvq1tru3u4ultZ45oz9aNgw91QptB06RzJHb+ryn9JbMYm/DjPnVVc7MTRSmezmSST7R/MS/wCpHwP+ZTSqD64D9IaaKUYtZ1XTZVhvUaYE4CXG7FIf4ZB+bfw9k0wadqtpqG8sLss0f0kMilJE8VPHz5UnFoakmTqKBRUjK7VtUXTokVIzPdTHdggU4Lnx6gOZPVS9ZWF5rd0L2a4DAHhdBcqvaLdDwA/eHJPVWIkOt6qXdiUuy44H5trG27ujs6R+fcKcURURVRQqgYAAwAK08OPZHkRrHTrWwQrbRBWfi7klnc9rMeJ86lYrNFZvksoNb2r03RbkW1z00k+6G3IkzgHlknAqqX0jaaWw1ndhe0bp/vW/pHsrdtEW8MS+sRSookxx3TzGeykDQYEuddsIJVDxyToGU8iM8q7cWHHLHsznnOSlSPTNW1PS9W2Qnna89XtrkdGsjoeDZ5Y6+I6uqvO3s9Z0C4W7QSw8PYuYvaRwexuRB769R1/TdPvtGe1vZEtoFwVkyFEZHIjq8qRhY4tX0222zszaEYMTMQMdnP8AvU4JpRa9DyK2dNmte9a1SWS6tbMai0DmK8K7nELn2+rHfVfqOqXTWfrJ2huZ77pcGO3LCJFwevAGfCrrQ9nNDuLPUIItVFzc9FuPOq4SIHjwzwPLic91RbfZkNp17a/lJYm3jYSuqYKh+QLHPAeFabY9myalVA+0GtSbGJdrflJI7owO4Ub7qQCOPVjj41X+t67Nsw998qTerxXO4y9I2+SccS3Z3VaWGypvtGezstoLaYGYSSRxjeQEDAPPIPurtdbPppuz0mlXmv2cLSzrNh1xwA5c888HPdQp41wvvz0FSfZbej3U7rUNKnS8maZ4Jd1Xc5YqRnBPX102Uo7D6T8nJcSQ6tbXsEuMpAOCsOsnOeXVTDe6rYafgXt5BATyDuAT5Vy5aeR6m0OIqyaaxmq86nHe2E8mjT211OqHcUSDG91A9lKOmaltM2vQR6lf2cEbSAPC8kftDsVVJOeylHG3f+A5JD/RUe6vLayi6W6nihT7UjBRXCz1nTb+To7O+t5n+yjgn7qinVlWiXNBFPE0U8ayRuMMjDIPlS3qez7wbs9h0rpDxSNXxLD/ANpz1fsNlT3U0DlQRwoUmugaTKDQ9ba4dLS8dGlcEwzqu6s4HMYPzXH1l86vs0sbQ6du3ccls3Rm7cAMP0dyoJjkHjgqe3Irva7V6bJawvPL0crIpdPstjiPvqpRvmJKdcMgbLkW17awy8HFtJanukilJI81YGnAcqVtoNOktp31G2LiJ2WSbo13mhkUYWZR18ODDrWrTR9Ziv1WKUpHdbm9uK2VkX7aH6yn3cjTmtv0hx44LWigHNFZlCn6R5AuzO6Txe4QD3n+1efbNME2k01mOALhOfjXom0myL65eC5+UpYsKAImXfQd4GRjNU8fo2cMDJqox+zDx+NduHJjjj1bOecJOdpEX0mdN8qWu9MDD0XsxBuKtniSO/hx7qgahCt/o2l2mn6PdLewqROy2zDe4duOOTxrXbCxSx1i3s2MwRIUQ3M7FukHb5ZxgdlRtQFxaWiMu0kV0uQFihuJCQPA8q1xr8RpkS8nwXF9s6+mbCSS3yGO7M6yFVbqJCgN1HAz4Zqr2b0eLVrbU+lmkjFtB0iqnJmGcZHXjHvq12f0jV9odDmt7i/nhsxIrRdIpcSHjnmc4HDuzV3pOxU2nW99Guqtm7hMWUiwF48+J8R5moeVRjKLfNlKFtNLgUthZhFtNC7PuIYpN85wN0Lnj92fKsxPpjT6j0FveavPJFIVmkUKEHMvjJJx28PCmHT/AEfSWt2kr6oCgBVljiwWUjBXJPWOFEHo/mt7tjFq7xwOpRtyPDsh5qTnFOWXG5OViUJJVQt7GXctnrTSQkk+rSkr1PurvAHzFR9E9X1XaKE61OzJcMTI5fG8xHAZ6hnhThpewPqWqJcy6gXiifeRUTdZu4nPLtxzrTVfR4k9y8um3awI5yYpE3gvgR1d1DzY3J89rsFjlSI+n7GSQbQSob2JbJ1cbscxErxkcsDy491KmhoF2ksUHVdoM/56fdH2I+TVmnGoN688TRxTImBDnrAPM1Wxeju8jnWRdWjQq28HWI7wPbz51Mc0edpehvG+KQu69fvqW00rXzMYY7jowmfmIGwQOzhW21enx6LtC8ViWjj3VlhIbiuew+INOOu7Cx6jObq1uuiuHA6XfXKyNji3DkTUey2AZ7pJtY1A3KoANxM8QOQLHjjuFVHPBJO+l0J45fBq0G6lvtEsrq4GJZYVZuHM45+fOrCtURI41RFCqoAAA4AVHv7+3sIOluHIyd1FUZZ26lUcya4Hy+Dp6RA2ilQeoRMwBa6SQk/VSPLsfDA99efrspqV8ovI1ZUuB0qjsDcR8aZkiuNodSlEo3Yvo7gq2VhjznoFI4F2ON8jgBwpxVd1QqjAAwAOqto5Hi4RDjsZIFLup7Nhy0umFIjv9IYGJEZb7SkcY27159YNMdFYqTXRbVijBr1/pkq22pxM3UBOVSQ/wv8AMk+9T3Ve2utWNzIIum6Gc/oZwY3+48/LNTZoIp42imjWSNuBR1BB8jVLdbL2jxlLOSS2T9Vwki/kfIHliquL74FTRfZFYzwpTGk63p/+Dk30HIW85T/1yby/cRQdc1azGLy3OB1z2rx/ij31+FGl9MNvowCbTdSMlvv21y0Z9uM4bdPLiKh3Frs9p7b89rYQsFLZMS5AHXy5VCttqreRsG2VmP6i5jc/cSre6otwbK5vHuZZr6FZJUkdXsmYEKMKu8ARgH2gOWeYNNRadCbRcaZe73TT3twkAZd+O2YgGGIDgWHacgnsyBUq/wBTt7O3Mm+skhA6OJWG9ITwUAd5pTEOmrHGia5bxvk9JJJGQ7neDb5LfW4dw45xwFdDa28rPINodPMpWRllEi73SMcb/Pnu+yPsjlQ4KwtjVpzym1UXNxHNcj6Xo8YVjx3Rjs5VCn1+Jb71S2heeTKoCOALnJC58AzE9QHXmueltpen27LFe2SlgPZWcbowMDiTk+NVrJbrAIptT0x5HJme6M+HSY5BYDPEBSFA7uNJJWNvgnSbRbkCF1jiZrp7YuSXQFc8RjBOTwHea0n1q9fTbmeNIrdrOL88WG+DNjPRqM9pAJ78VX9DoUUclrFq1mbWRI0K7wd1CnJAI+0eJOOfHsxKt5dMR2AuLm7hFw9ysUdo5G+x3skge1gnh5dlVqvSFZfyX0Fraxy380VvvAZ32A9rHEDtqUrKyhlOQRkUv3O0ttEMtZzDHIztHCPxNn3VEO093cndsoIWP7pZLk/hUL+KpWOTHskNeRUW81GzsVBu7mOInkrN7TeA5nypc6HaO/8AnieND+slW3X+WPef8QqTZ7LbjFrm7KlvnLar0WfFyS5/mp6pdsNm+ka3+00nSCCzgZHf5pmQmRv4YR7R8W3RXO00O/v5vWdSklhDDDZcGdx9nI9mJf2U49ppgsdNstPjKWdtHCD84qOLeJ5nzqXS3S8Q1vs421tDaW6QW0SxRRjCogwAK7UUVBQUUUUAFFFFABWKKKGBFns7W64XNrBMD+sjDfGojbN6McsthHGe2ImP+kiiimmyaKLVbRLPPq812mOX/VSn4tSje6rqEZIW7kP8R3vjRRXZhV9mMiB8u6ln/EL/AKSf8V2t9a1J3AN0Rx+qqj4CiiuuUY69EWM2ktNeEC4urpgT1XDr8CKaYNntKmjDT27zH97PI/xY0UV52VtPg1gTINI0y1INtp9rGe1YlB+/FTV4DA5CiisW77NfZsKKKKQwooooAKKKKAP/2Q=="},"agroex":{"nombre":"AGROEXPORTACIONES CHILE (AGROEX)","form":"1FAIpQLSdRbX8GkuStC9gSzwgqLt7iE8ieoC5IxIpAUrnpCisEkFO8ig","inst":["Planta Ruta 5 Sur Km 423"],"e":{"nombre":1425061562,"rut":1814196582,"dia":1273678087,"mes":204272202,"anio":1305498485,"nac":934852314,"genero":83863247,"civil":506603787,"inst":600460200,"ingreso":785350727,"cargo":404586491,"region":423813295,"com0":1137973901,"com1":943405686,"com2":1072739695,"com3":2111642746,"com4":1234347256,"com5":402094004,"com6":766327334,"com7":2003044871,"com8":1839391158,"com9":284891975,"com10":263640482,"com11":269238502,"com12":1383673223,"com13":601078544,"com14":2097255545,"com15":1120723916,"ciudad":709672251,"dir":1938673626,"tel":590231459,"correo":95208040,"lic":1422363065,"clase":225773759,"venc":703213559,"afp":1138022361,"salud":1261421447,"disc":900744662,"enf":1389942676,"med":1956762901,"alerg":1799093772,"camisa":1665833166,"pantalon":1389432457,"calzado":973560806,"emNombre":594073274,"parent":1476899516,"emTel":239785631,"tipo":894280683,"banco":259410398,"cuenta":1639830544},"logo":"data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAwICQsJCAwLCgsODQwOEh4UEhEREiUbHBYeLCcuLisnKyoxN0Y7MTRCNCorPVM+QkhKTk9OLztWXFVMW0ZNTkv/2wBDAQ0ODhIQEiQUFCRLMisyS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0v/wAARCABUAG4DASIAAhEBAxEB/8QAGwAAAgMBAQEAAAAAAAAAAAAAAAYBAwUEBwL/xAA8EAACAQMCAwQHBAgHAAAAAAABAgMABBEFEgYhMRNBUWEUIkJxgZGhByPB0TIzUnKSseHwFSRDU2KEwv/EABkBAAMBAQEAAAAAAAAAAAAAAAACBAMBBf/EAC4RAAIBAwIEBQEJAAAAAAAAAAECAAMEERIxEyFBUQUiMoGRYRQVM1JxocHR8P/aAAwDAQACEQMRAD8A9VoooohCoqHdUQszBVAySTgClbV+LFXdFpwDn/eYcvgO+lZgu8R6ioMtGS6vILOPtLiVI18WOM0vXvGMCZWzgaU/tv6o+XWlK4uJbmUyzyNI59pjmq6nasTtIHu2Pp5TXueJdTuCcTiFfCNcfXrXzb6mJHX0gR5A5yXDySAn90HFZsMTzSBI0Z2PcvWnDh3RJbd1nuYrYDHJdu98+O7oPhSpqYxafEqNvOyyhvbmBJF1ERxEeqsVqE5eW6tS2hMKYaaSUn2nIz9KtFVzNKo+6jDnzfb+FVgYnpKuJbRWfJc6iv6NhE3/AGcf+apbVL6HnNo9yV8YZEk+mQaM4mwpsdsfImtRWRbcRadPMIHla3nP+lcIY2+vWtbNAIO0VkZOTDEmoPSppa4vv9RsPRhpk4NzcNsjgMasDgFmbPXoKYDJxFld/Bfao0kmpN6Bp0XMpkFmHicUs6ibd7hnsomS1GEQkHLEDqfOvQNPuINY0m3uCivFcRq5VhkZ7x8DWXd63w2Fa0lkhkWIlSscLOqn3qMZrJqJblJalDX1iTRTZctwuplQdkJIgY2yHCqfM4wD51iTaPPFH27vbrbFN5uDKOyA7hu76wai6yR7d1+s6+HtKm1Jh2pxZKfXAfaWPw5/OnmCGO3hSKJAkaDCqOgFee2Gq3OjS9lHNGyvh2jKnp4gHBpoi4v0dh97ddg+eaSKcgePLPLzrakMeXHOVW5VRp6zeorkk1Ozjlto3uEDXX6jnyk7+R6VLahapfJZNMvpMiF1j79o7/dWuJXOqoqaKITj1HTbXUrdobyFZUPTI5jzB7qT9N1xuHNTvNJv5nmtYecLtzZRyIHuwfpTxNMkMTySsERFLMx6ADvrzC0spOLtev509SM+vk9wyAo+QqesSCNO89Xw9FqI4rHyAfBz0nqVJ9xLqF/xbPcadbwXCaZH6OO2lKAO3NiMA5OOVN5bHWuaw06209ZVto9nbSNK5LElmPU5NVKcTyom2kl9Z6HxBpGwRXlurTQpExYCOTmQp78c607K/h0ngOO901I3ENsrYPQvy3Zx35zW+dOtjqIv+zxciLst4J5rnOCOh51nXHCOi3DyM1oV7Q5dY5GRSf3QcU+pTvOTB0zXoNJXW5rqC4dHv2OUjymSq+qSeQ+NcMWmXOm3ugW2oBVtp72SfsVOUjY42Jnof6mnmHR7GGG5hWBTHdOXmR/WDkgDofcK+DoWnmwNi0Ja23BlRnY7COm0k5XHdiu8QZhiLP2jhBJpLpj0jtmUeJTAz8OlJ+nyzIJWWLc5kbe3aAH3fKnriXh/1I7q3W6up19Us8hchfj+HxpRubFBMwkGH6OEcjPkcdaneqoGkj3kVw2GwRLLO7EOiTWWptKttGS9ssQBaN85Uhu7B8PGmHgvU7U+m3WpzbdUdlE8kpAG32Qvly+dLTQxtsyuezOVHcKvs9Pkv7xFt0DT4wDuxypRcZBHeIly2289GXWdPae4hF0hktlLSjn6oAyTXT6VCbYXHaKISm/eTgbcZzmk6SPSOHbSZNRl9Ju5wA8MTHJH7J58hnxrBjbVOJ5BZWMZhsYzyj3ExxjzJ6+75CuNVAGBv2nvWtlUrLxKnlXqT/Hed/Eevz8Q3K6VpCs8LNgkcjKfwUU4cOaNHounLAhDSt60r/tN+Q7q+OHuHrXQ4MR/eXDj7yZhzPkPAeVbGKEQ51NvHurlCgoUBhB8k9zMTQr06zLcXu77iOUwwJ3ADGWPmc/AVuV5xZX13wVqc1rcwtLYzNuUjlkdzL546im6x4p0i9UbL2NGPsynYfrXEqAjB3hdWjq2umModiJs0VQl5buMrPEw8Q4ND3lsgy1xEo83ArXIkOlu0vorMuOIdJt/1mo2wPgHDH6Vk3XHmkwg9j21w3/BMD5mlNRRuZtTta9T0oT7RjuhI1vIsIUyFSFD5xnzxXmNzF2FxJEWRijYJT9HPlXZqfHN5fxSQWdqsKOMFtxZ8fDAFY9hpOp6xMIolOPaLHCqPOpqtQOQF5x6vhDHHHcIPqefxCW7hi5Ftx8F51ZZajqVxutdJhdXk5O0QzIR4bvZHuxTXpnAFlBhr6Z7lh7I9RPzNNNpZ29nCIraFIYx7KLgULRc8ycTWmLCz50l1t3O3x/v1iVo3AbM4n1iXJJyYY2yT+835fOne1tYbSFYbeJYol6KowBVtTVKU1TaYXF1VuDmofbpIqaKKeTSi7s7e9hMN1CksZ6q4yKWbzgHTJiTbyT2+e4MGX5H86bailZFbcTelc1qP4bEREf7OBn7vUf4of61CfZwPb1H+GD+tNuq6l/h4jCRdrJJuIUuEACjLEseQGP51SvEOn7RvlZTyDDYWCkgN1AI5AjJBwM0n2dO0q+9bz8/7D+phwfZ5YIfvru4k8l2r+Fadrwfotuc+hiVh3ysW+nSupuItMUN/mQSvUBGJ7uWMeYr6XX9OeZIknLNIwRdqMQSQDyOPAj3ZFMKKjZZi99cv6nMWuKrqCJl060t1gSI7nKrtDHuGO8UxcOWEVnpyMkTpJKAz9ofWPh7q55nsb3iVbSa33T20IcOWGOZ5Ajv/vlU23EtsxuGuAsEUEhjLb95zuKjIA5Zxy+FC0yGyZ5wQ8QuxzNzFTWW+v6ehkDTMDGdpXsmyTkg4GOeMHOOmKrfiTT0n7PtHZQGJkWNioI28gccydw6VpgzabFFZY4h00uirOWLlQu2NiCSMgZx4c/KtSuYhCiiiiEKKKKITj1DT4dQVFmMilCSrxuVZcjB5jxBxXKeH7DsRCqSJGpzhZCORUKV9xCjIooroJhPh+GtNcyt2LK8xJZgxyCW35Hx/KrH0CxdUQrJtjlEoG882wBz/hH9miiu5MJ9nRbQ6kuo4k9IViww52gkbSceYA+VVvw/aPFJE73LQyPvMRmbaCSWyB3czn5UUUAmE49P0W2u4ppJXnMhuJlVxKQUAkcer4Zyc+Oa7JOHrCWJYyjqi7iArkAbsH+aqR7qKK6ScwkycP2MkAhZZOzDhyN55kALz+AFag6UUUphJooorkJ//9k="},"inversiones":{"nombre":"INVERSIONES SAN IGNACIO","form":"1FAIpQLSe7DcMoBre0EgsyF-vBz0PZBUbk1ETy6-6hHpLEAw_WwZWuNw","inst":["Ruta 5 Sur Km 423"],"e":{"nombre":1425061562,"rut":1814196582,"dia":163224181,"mes":669407148,"anio":2119178210,"nac":934852314,"genero":83863247,"civil":506603787,"inst":922278675,"ingreso":785350727,"cargo":1347797457,"region":423813295,"com0":1846774995,"com1":1839594127,"com2":177169885,"com3":175149792,"com4":1365037567,"com5":805884776,"com6":796827395,"com7":481141065,"com8":532277754,"com9":99064746,"com10":334375002,"com11":1781752593,"com12":1616203166,"com13":1830775180,"com14":675544422,"com15":1226433183,"ciudad":1637504005,"dir":1938673626,"tel":590231459,"correo":95208040,"lic":1422363065,"clase":225773759,"venc":703213559,"afp":1138022361,"salud":1261421447,"disc":900744662,"enf":1389942676,"med":1956762901,"alerg":1799093772,"camisa":1665833166,"pantalon":1389432457,"calzado":973560806,"emNombre":594073274,"parent":1476899516,"emTel":239785631,"tipo":894280683,"banco":259410398,"cuenta":1639830544},"logo":""},"agricola":{"nombre":"AGRICOLA SAN IGNACIO","form":"1FAIpQLScfXoRMGTGOrtdLFAvE3vOx2OTCc6ohVI-WQYJ-futax50ZcQ","inst":["Fundo El Tranque","Fundo Pite","Fundo Monte León","Fundo El Cauchal","Ruta 5 Sur Km 423"],"e":{"nombre":1425061562,"rut":1814196582,"dia":1835357346,"mes":1175755934,"anio":421161708,"nac":934852314,"genero":83863247,"civil":506603787,"inst":1307034035,"ingreso":785350727,"cargo":1144121777,"region":423813295,"com0":457023360,"com1":111818922,"com2":451637785,"com3":200465616,"com4":157158096,"com5":1803367786,"com6":1454172493,"com7":1351347316,"com8":274189580,"com9":1793071421,"com10":2107948667,"com11":319200244,"com12":69000891,"com13":287569899,"com14":1801815425,"com15":1952675876,"ciudad":1722670155,"dir":1938673626,"tel":590231459,"correo":95208040,"lic":1422363065,"clase":225773759,"venc":703213559,"afp":1138022361,"salud":1261421447,"disc":900744662,"enf":1389942676,"med":1956762901,"alerg":1799093772,"camisa":1665833166,"pantalon":1389432457,"calzado":973560806,"emNombre":594073274,"parent":1476899516,"emTel":239785631,"tipo":894280683,"banco":259410398,"cuenta":1639830544},"logo":"data:image/jpeg;base64,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"}},"O":{"nac":["Chilena","Venezolana","Peruana","Colombiana","Haitiana","Boliviana","Argentina","---------","Afgana","Albanesa","Alemana","Andorrana","Angoleña","Antiguana","Argelina","Armenia","Australiana","Austríaca","Azerbaiyana","Bahameña","Bangladesí","Barbadense","Baréini","Belga","Beliceña","Beninesa","Bhutanesa","Bielorrusa","Birmana","Bisauguineana","Bosnia","Botsuana","Brasileña","Británica","Búlgara","Burkinesa","Burundesa","Caboverdiana","Camboyana","Camerunesa","Canadiense","Chadiana","Checa","China","Chipriota","Comorense","Congoleña","Costarricense","Croata","Cubana","Danesa","Dominicana","Dominiquesa","Ecuatoguineana","Ecuatoriana","Egipcia","Emiratí","Eritrea","Eslovaca","Eslovena","Española","Estadounidense","Estonia","Esuatinense","Etíope","Filipina","Finlandesa","Fiyiana","Francesa","Gabonesa","Gambiana","Georgiana","Ghanesa","Granadina","Griega","Guatemalteca","Guineana","Guyanesa","Hondureña","Húngara","India","Indonesia","Iraní","Iraquí","Irlandesa","Islandesa","Israelí","Italiana","Jamaicana","Japonesa","Jordana","Kazaja","Keniana","Kirguisa","Kuwaití","Laosiana","Lesotense","Letona","Libanesa","Liberiana","Libia","Liechtensteiniana","Lituana","Luxemburguesa","Macedonia","Malasia","Malauí","Maldiva","Malgache","Maliense","Maltesa","Marfileña","Marroquí","Mexicana","Moldava","Monegasca","Mongola","Montenegrina","Mozambiqueña","Namibia","Neerlandesa","Neozelandesa","Nepalí","Nicaragüense","Nigeriana","Nigerina","Norcoreana","Noruega","Omaní","Pakistaní","Palestina","Panameña","Papú","Paraguaya","Polaca","Portuguesa","Puertorriqueña","Qatarí","Ruandesa","Rumana","Rusa","Salomonense","Salvadoreña","Samoana","Sankittitiana","Sanlucense","Sanmarinense","Sanvicentina","Saudí","Senegalesa","Serbia","Sierraleonesa","Singapurense","Siria","Somalí","Sri Lankesa","Sudafricana","Sudanesa","Sueca","Suiza","Surcoreana","Surinamesa","Sursudanesa","Tailandesa","Tanzana","Tayika","Togolesa","Tongana","Trinitense","Tunecina","Turca","Turcomana","Ucraniana","Ugandesa","Uruguaya","Uzbeka","Vanuatuense","Vaticana","Vietnamita","Yemenita","Yibutiana","Zambiana","Zimbabuense","Otra"],"genero":["MASCULINO","FEMENINO"],"civil":["Soltero/a","Casado/a","Viudo/a","Divorciado/a","Conviviente Civil"],"regiones":["I - Tarapacá","II - Antofagasta","III - Atacama","IV - Coquimbo","V - Valparaíso","RM - Metropolitana de Santiago","VI - Libertador General Bernardo O'Higgins","VII - Maule","VIII - Biobío","IX - La Araucanía","X - Los Lagos","XI - Aysén del General Carlos Ibáñez del Campo","XII - Magallanes y de la Antártica Chilena","XIV - Los Ríos","XV - Arica y Parinacota","XVI - Ñuble"],"comunas":{"I - Tarapacá":["Alto Hospicio","Camiña","Colchane","Huara","Iquique","Pica","Pozo Almonte"],"II - Antofagasta":["Antofagasta","Calama","María Elena","Mejillones","Ollagüe","San Pedro de Atacama","Sierra Gorda","Taltal","Tocopilla"],"III - Atacama":["Alto del Carmen","Caldera","Chañaral","Copiapó","Diego de Almagro","Freirina","Huasco","Tierra Amarilla","Vallenar"],"IV - Coquimbo":["Andacollo","Canela","Combarbalá","Coquimbo","Illapel","La Higuera","La Serena","Los Vilos","Monte Patria","Ovalle","Paihuano","Punitaqui","Río Hurtado","Salamanca","Vicuña"],"V - Valparaíso":["Algarrobo","Cabildo","Calle Larga","Cartagena","Casablanca","Catemu","Concón","El Quisco","El Tabo","Hijuelas","Isla de Pascua","Juan Fernández","La Calera","La Cruz","La Ligua","Limache","Llay Llay","Los Andes","Nogales","Olmué","Panquehue","Papudo","Petorca","Puchuncaví","Putaendo","Quillota","Quilpué","Quintero","Rinconada","San Antonio","San Esteban","San Felipe","Santa María","Santo Domingo","Valparaíso","Villa Alemana","Viña del Mar","Zapallar"],"RM - Metropolitana de Santiago":["Alhué","Buin","Calera de Tango","Cerrillos","Cerro Navia","Colina","Conchalí","Curacaví","El Bosque","El Monte","Estación Central","Huechuraba","Independencia","Isla de Maipo","La Cisterna","La Florida","La Granja","La Pintana","La Reina","Lampa","Las Condes","Lo Barnechea","Lo Espejo","Lo Prado","Macul","Maipú","María Pinto","Melipilla","Ñuñoa","Padre Hurtado","Paine","Pedro Aguirre Cerda","Peñaflor","Peñalolén","Pirque","Providencia","Pudahuel","Puente Alto","Quilicura","Quinta Normal","Recoleta","Renca","San Bernardo","San Joaquín","San José de Maipo","San Miguel","San Pedro","San Ramón","Santiago","Talagante","Tiltil","Vitacura"],"VI - Libertador General Bernardo O'Higgins":["Chépica","Chimbarongo","Codegua","Coinco","Coltauco","Doñihue","Graneros","La Estrella","Las Cabras","Litueche","Lolol","Machalí","Malloa","Marchihue","Mostazal","Nancagua","Navidad","Olivar","Palmilla","Paredones","Peralillo","Peumo","Pichidegua","Pichilemu","Placilla","Pumanque","Quinta de Tilcoco","Rancagua","Rengo","Requínoa","San Fernando","San Vicente","Santa Cruz"],"VII - Maule":["Cauquenes","Chanco","Colbún","Constitución","Curepto","Curicó","Empedrado","Hualañé","Licantén","Linares","Longaví","Maule","Molina","Parral","Pelarco","Pelluhue","Pencahue","Rauco","Retiro","Río Claro","Romeral","Sagrada Familia","San Clemente","San Javier","San Rafael","Talca","Teno","Vichuquén","Villa Alegre","Yerbas Buenas"],"VIII - Biobío":["Alto Biobío","Antuco","Arauco","Cabrero","Cañete","Chiguayante","Concepción","Contulmo","Coronel","Curanilahue","Florida","Hualpén","Hualqui","Laja","Lebu","Los Álamos","Los Ángeles","Lota","Mulchén","Nacimiento","Negrete","Penco","Quilaco","Quilleco","San Pedro de la Paz","San Rosendo","Santa Bárbara","Santa Juana","Talcahuano","Tirúa","Tomé","Tucapel","Yumbel"],"IX - La Araucanía":["Angol","Carahue","Cholchol","Collipulli","Cunco","Curacautín","Curarrehue","Ercilla","Freire","Galvarino","Gorbea","Lautaro","Loncoche","Lonquimay","Los Sauces","Lumaco","Melipeuco","Nueva Imperial","Padre las Casas","Perquenco","Pitrufquén","Pucón","Purén","Renaico","Saavedra","Temuco","Teodoro Schmidt","Toltén","Traiguén","Victoria","Vilcún","Villarrica"],"X - Los Lagos":["Ancud","Calbuco","Castro","Chaitén","Chonchi","Cochamó","Curaco de Vélez","Dalcahue","Fresia","Frutillar","Futaleufú","Hualaihué","Llanquihue","Los Muermos","Maullín","Osorno","Palena","Puerto Montt","Puerto Octay","Puerto Varas","Puqueldón","Purranque","Puyehue","Queilén","Quellón","Quemchi","Quinchao","Río Negro","San Juan de la Costa","San Pablo"],"XI - Aysén del General Carlos Ibáñez del Campo":["Aysén","Chile Chico","Cisnes","Cochrane","Coyhaique","Guaitecas","Lago Verde","O'Higgins","Río Ibáñez","Tortel"],"XII - Magallanes y de la Antártica Chilena":["Antártica","Cabo de Hornos","Laguna Blanca","Natales","Porvenir","Primavera","Punta Arenas","Río Verde","San Gregorio","Timaukel","Torres del Paine"],"XIV - Los Ríos":["Corral","Futrono","La Unión","Lago Ranco","Lanco","Los Lagos","Máfil","Mariquina","Paillaco","Panguipulli","Río Bueno","Valdivia"],"XV - Arica y Parinacota":["Arica","Camarones","General Lagos","Putre"],"XVI - Ñuble":["Bulnes","Chillán","Chillán Viejo","Cobquecura","Coelemu","Coihueco","El Carmen","Ninhue","Ñiquén","Pemuco","Pinto","Portezuelo","Quillón","Quirihue","Ránquil","San Carlos","San Fabián","San Ignacio","San Nicolás","Treguaco","Yungay"]},"lic":["SI","NO"],"clase":["Clase A1 (Antigua)","Clase A2 (Antigua)","Clase A1","Clase A2","Clase A3","Clase A4","Clase A5","Clase B","Clase C","Clase D","Clase E","Clase F"],"afp":["AFP Capital","AFP Cuprum","AFP Habitat","AFP Modelo","AFP PlanVital","AFP Provida","AFP Uno","Jubilado","Ninguna / IPS"],"salud":["Fonasa","Isapre","Dipreca / Capredena","Ninguna"],"sino":["SI","NO"],"camisa":["XS","S","M","L","XL","XXL","XXXL"],"pantalon":["38","40","42","44","46","48","50","52","54","56","58"],"calzado":["36","37","38","39","40","41","42","43","44","45","46"],"tipo":["Cuenta RUT (BancoEstado)","Cuenta Vista","Cuenta Corriente","Cuenta de Ahorro","Cuenta Prepago o App (Tenpo, Mercado Pago, MACH, Tapp, etc.)","Efectivo","Cheque"],"banco":["Banco Estado","Banco de Chile / Edwards","Banco Santander","BCI (incluye MACH)","Banco Itaú","Scotiabank","Banco BICE","Banco Security","Banco Falabella","Banco Ripley","Banco Consorcio","Banco Internacional","Coopeuch","Tenpo","Mercado Pago","Tapp (Caja Los Andes)","Los Héroes (Prepago)","Copec Pay","Otro"]}};
+const SUBIDA = 'https://script.google.com/macros/s/AKfycbxphUd6xHhCtjBet147Navm8I-FjGzG9g6x2zHXcO8hCVhhiz0JKRGGMV7cPdzaLmF3/exec';
+const clave = (new URLSearchParams(location.search).get('e') || '').toLowerCase();
+const EMP = DATA.E[clave], O = DATA.O;
+const $ = id => document.getElementById(id);
+const app = $('app');
+const GUARDA = 'insc_' + clave;
+let A = {}, pos = 0, fotos = { F: null, R: null }, fotosSubidas = false;
+try { A = JSON.parse(localStorage.getItem(GUARDA) || '{}'); } catch (e) { A = {}; }
+const guardar = () => { try { localStorage.setItem(GUARDA, JSON.stringify(A)); } catch (e) {} };
+
+// ---------- utilidades ----------
+const LET = "A-Za-zÁÉÍÓÚÜÑáéíóúüñ'´.\\-";
+const RX2 = new RegExp('^\\s*[' + LET + ']+(\\s+[' + LET + ']+)+\\s*$');
+const RX1 = new RegExp('^\\s*[' + LET + ']+(\\s+[' + LET + ']+)*\\s*$');
+const tit = s => s.toLowerCase().replace(/(^|\s)\S/g, c => c.toUpperCase());
+const limpioRut = s => s.toUpperCase().replace(/[^0-9K]/g, '').replace(/K(?=.)/g, '');
+function dv(c) { let s = 0, m = 2; for (let i = c.length - 1; i >= 0; i--) { s += Number(c[i]) * m; m = m === 7 ? 2 : m + 1; } const r = 11 - (s % 11); return r === 11 ? '0' : r === 10 ? 'K' : String(r); }
+const fmtRut = c => c.length < 2 ? c : c.slice(0, -1).replace(/\B(?=(\d{3})+(?!\d))/g, '.') + '-' + c.slice(-1);
+function rutOk(v) { const c = limpioRut(v); if (c.length < 8) return false; const b = c.slice(0, -1); return /^\d{7,8}$/.test(b) && dv(b) === c.slice(-1); }
+const MESES = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+const ANIOS = []; for (let a = 2010; a >= 1940; a--) ANIOS.push(String(a));
+function hablar(t) { try { speechSynthesis.cancel(); const u = new SpeechSynthesisUtterance(t.replace(/[^\wÁÉÍÓÚÜÑáéíóúüñ¿?¡!.,:; ]/g, ' ')); u.lang = 'es-CL'; u.rate = 0.95; speechSynthesis.speak(u); } catch (e) {} }
+const telFmt = d => d.slice(0, 4) + ' ' + d.slice(4, 8);
+
+// ---------- pasos ----------
+const S = [
+ // 1 datos personales
+ { id:'rut', sec:1, t:'Escriba su RUT', h:'Escriba solo los números. Los puntos y el guion se ponen solos.', tipo:'rut' },
+ { id:'nombre', sec:1, t:'¿Cuál es su nombre completo?', h:'Todos sus nombres y sus dos apellidos. Ej: Juan Andrés Pérez Soto', tipo:'texto', ph:'Nombres y apellidos',
+   ok: v => RX2.test(v) && v.trim().split(/\s+/).every(p => p.length > 1), err: v => /\d/.test(v) ? '❌ Escriba solo letras, sin números' : 'Escriba su nombre y sus dos apellidos', fmt: v => tit(v.replace(/\s+/g, ' ').trim()) },
+ { id:'nac', sec:1, t:'¿Cuándo nació?', h:'Elija el día, el mes y el año en que nació.', tipo:'fecha3' },
+ { id:'nacio', sec:1, t:'¿Cuál es su nacionalidad?', h:'Toque una opción.', tipo:'nacion' },
+ { id:'genero', sec:1, t:'¿Cuál es su género?', tipo:'bot', ops:() => O.genero, cols:2 },
+ { id:'civil', sec:1, t:'¿Cuál es su estado civil?', tipo:'bot', ops:() => O.civil, cols:1 },
+ // 2 trabajo
+ { id:'inst', sec:2, t:'¿Dónde trabaja?', h:'Si trabaja en más de un lugar, márquelos todos.', tipo:'multi', ops:() => EMP.inst },
+ { id:'ingreso', sec:2, t:'¿Cuándo entró a trabajar a la empresa?', h:'Si no se acuerda, toque "No me acuerdo".', tipo:'fecha', opcional:'No me acuerdo' },
+ { id:'cargo', sec:2, t:'¿Cuál es su cargo?', h:'Ej: Operario de planta, Temporero, Administrativo', tipo:'texto', ph:'Su cargo',
+   ok: v => v.trim().length >= 3 && /[A-Za-zÁÉÍÓÚÑáéíóúñ]/.test(v), err: () => 'Escriba su cargo con palabras', fmt: v => v.replace(/\s+/g, ' ').trim() },
+ // 3 licencia (despues del cargo)
+ { id:'lic', sec:3, t:'¿Tiene licencia de conducir?', tipo:'lic' },
+ { id:'clase', sec:3, t:'¿Qué clase de licencia tiene?', h:'La clase aparece por delante de su licencia.', tipo:'bot', ops:() => O.clase, cols:2, si: () => A.lic === 'SI' },
+ { id:'venc', sec:3, t:'¿Cuándo vence su licencia?', h:'Es la fecha de "Control" que aparece en su licencia.', tipo:'fecha', futura:true, si: () => A.lic === 'SI' },
+ { id:'fotos', sec:3, t:'Saque 2 fotos de su licencia', h:'Una del FRENTE (donde está su cara) y otra del REVERSO (la parte de atrás). Que se vea completa y se lean las letras.', tipo:'fotos', si: () => A.lic === 'SI' },
+ // 4 donde vive
+ { id:'region', sec:4, t:'¿En qué región vive?', h:'Toque su región.', tipo:'region' },
+ { id:'comuna', sec:4, t:'¿En qué comuna vive?', h:'Toque su comuna.', tipo:'comuna' },
+ { id:'ciudad', sec:4, t:'¿En qué ciudad, pueblo o sector vive?', h:'Ej: Bulnes, Santa Clara, Pueblo Seco', tipo:'texto', ph:'Ciudad o pueblo',
+   ok: v => RX1.test(v) && v.trim().length >= 2, err: () => '❌ Escriba solo letras', fmt: v => tit(v.replace(/\s+/g, ' ').trim()) },
+ { id:'dir', sec:4, t:'¿Cuál es su dirección?', h:'Calle, número y villa o población. Ej: Av. Ricardo Vicuña 123, Villa Los Aromos', tipo:'texto', ph:'Su dirección',
+   ok: v => v.trim().length >= 5 && /[A-Za-zÁÉÍÓÚÑáéíóúñ]/.test(v), err: () => 'Escriba su dirección completa', fmt: v => v.replace(/\s+/g, ' ').trim() },
+ // 5 contacto
+ { id:'tel', sec:5, t:'¿Cuál es su número de celular?', h:'Escriba los 8 números que van después del 9.', tipo:'tel' },
+ { id:'correo', sec:5, t:'¿Cuál es su correo electrónico?', h:'Si no tiene correo, toque "No tengo correo".', tipo:'correo' },
+ // 6 prevision
+ { id:'afp', sec:6, t:'¿En qué AFP está?', h:'Si no sabe, revise su liquidación de sueldo.', tipo:'bot', ops:() => O.afp, cols:2 },
+ { id:'salud', sec:6, t:'¿Cuál es su sistema de salud?', tipo:'bot', ops:() => O.salud, cols:2 },
+ // 7 salud
+ { id:'disc', sec:7, t:'¿Tiene alguna discapacidad?', h:'Esta información es confidencial y sirve para cuidarlo.', tipo:'bot', ops:() => O.sino, cols:2 },
+ { id:'enf', sec:7, t:'¿Tiene alguna enfermedad crónica?', h:'Ej: hipertensión, diabetes, asma.', tipo:'sino', no:'No tengo', ph:'¿Cuál?' },
+ { id:'med', sec:7, t:'¿Toma algún medicamento todos los días?', tipo:'sino', no:'No tomo', ph:'¿Cuál?' },
+ { id:'alerg', sec:7, t:'¿Tiene alguna alergia?', h:'A medicamentos, alimentos o picaduras.', tipo:'sino', no:'No tengo', ph:'¿A qué?' },
+ // 8 tallas
+ { id:'camisa', sec:8, t:'¿Cuál es su talla de camisa o polera?', tipo:'bot', ops:() => O.camisa, cols:4 },
+ { id:'pantalon', sec:8, t:'¿Qué número de pantalón usa?', tipo:'bot', ops:() => O.pantalon, cols:4 },
+ { id:'calzado', sec:8, t:'¿Qué número de zapato usa?', tipo:'bot', ops:() => O.calzado, cols:4 },
+ // 9 emergencia
+ { id:'emNombre', sec:9, t:'Si a usted le pasa algo, ¿a quién llamamos?', h:'Escriba el nombre y apellido de esa persona. Ej: María Soto', tipo:'texto', ph:'Nombre y apellido',
+   ok: v => RX2.test(v), err: v => /\d/.test(v) ? '❌ Escriba solo letras' : 'Escriba nombre y apellido', fmt: v => tit(v.replace(/\s+/g, ' ').trim()) },
+ { id:'parent', sec:9, t:'¿Qué es de usted esa persona?', tipo:'parent' },
+ { id:'emTel', sec:9, t:'¿Cuál es el celular de esa persona?', h:'El número de esa persona, no el suyo.', tipo:'tel' },
+ // 10 pago
+ { id:'tipo', sec:10, t:'¿Cómo le pagan el sueldo?', tipo:'bot', ops:() => O.tipo, cols:1 },
+ { id:'rutInfo', sec:10, t:'Cuenta RUT ✅', h:'No tiene que escribir nada más. Su número de cuenta es su RUT sin puntos, sin guion y sin el último dígito.', tipo:'info', si: () => /^Cuenta RUT/.test(A.tipo || '') },
+ { id:'banco', sec:10, t:'¿En qué banco o app recibe el sueldo?', tipo:'bot', ops:() => O.banco, cols:2, si: () => tieneBanco() },
+ { id:'cuenta', sec:10, t:'¿Cuál es su número de cuenta?', h:'Escriba solo números, tal como aparece en su cartola o en la app de su banco.', tipo:'texto', ph:'Número de cuenta', num:true,
+   ok: v => /^\s*[0-9][0-9 -]{3,24}\s*$/.test(v), err: () => 'Escriba solo números', fmt: v => v.replace(/\s+/g, '').trim(), si: () => tieneBanco() },
+ { id:'resumen', sec:11, t:'Revise sus datos', h:'Si algo está mal, toque "Corregir". Si todo está bien, toque "Enviar".', tipo:'resumen' },
+];
+const SECS = ['', 'Sus datos', 'Su trabajo', 'Licencia de conducir', 'Dónde vive', 'Cómo ubicarlo', 'Previsión', 'Salud', 'Tallas', 'Contacto de emergencia', 'Pago de sueldo', 'Revisar y enviar'];
+const tieneBanco = () => !!A.tipo && !/^Cuenta RUT|^Efectivo|^Cheque/.test(A.tipo);
+const visibles = () => S.filter(s => !s.si || s.si());
+
+// ---------- pintar ----------
+function pintar() {
+  const V = visibles();
+  if (pos >= V.length) pos = V.length - 1;
+  const s = V[pos];
+  $('secT').textContent = s.sec <= 10 ? 'Paso ' + s.sec + ' de 10 · ' + SECS[s.sec] : SECS[s.sec];
+  $('secN').textContent = '';
+  $('barra').style.width = Math.round(100 * pos / (V.length - 1)) + '%';
+  let h = '<div class="preg">' + s.t + '</div>';
+  if (s.h) h += '<p class="ayuda">' + s.h + '</p>';
+  h += '<button class="oir" id="oir">🔊 Escuchar</button>';
+  h += '<div id="campo"></div><div class="estado" id="est"></div>';
+  h += '<div class="pie">' + (pos > 0 ? '<button class="btn sec2" id="atras">← Atrás</button>' : '') + '<button class="btn" id="sig">' + (s.tipo === 'resumen' ? 'Enviar ✅' : 'Siguiente ➜') + '</button></div>';
+  app.innerHTML = h;
+  $('oir').onclick = () => hablar(s.t + '. ' + (s.h || ''));
+  if ($('atras')) $('atras').onclick = () => { pos--; pintar(); };
+  $('sig').onclick = () => avanzar(s);
+  CAMPOS[s.tipo](s, $('campo'));
+  revisar(s);
+  window.scrollTo(0, 0);
+}
+function marcar(ok, msg, tipo) { const e = $('est'); e.className = 'estado ' + (tipo || (ok ? 'ok' : 'mal')); e.textContent = msg || ''; $('sig').disabled = !ok; }
+function revisar(s) { const r = VALIDA[s.tipo] ? VALIDA[s.tipo](s) : [A[s.id] !== undefined && A[s.id] !== '', '']; marcar(r[0], r[1], r[2]); return r[0]; }
+async function avanzar(s) {
+  if (!revisar(s)) return;
+  if (s.tipo === 'fotos' && !fotosSubidas) { if (!(await subirFotos())) return; }
+  if (s.tipo === 'resumen') return enviar();
+  guardar();
+  if (corrigiendo) { const V = visibles(); const k = V.findIndex((x, i) => i > pos && !valido(x)); pos = k >= 0 ? k : V.length - 1; if (k < 0) corrigiendo = false; }
+  else pos++;
+  pintar();
+}
+let corrigiendo = false;
+const valido = x => x.tipo === 'fotos' ? fotosSubidas : (VALIDA[x.tipo] ? VALIDA[x.tipo](x)[0] : (A[x.id] !== undefined && A[x.id] !== ''));
+const auto = s => setTimeout(() => { if (revisar(s)) avanzar(s); }, 250);
+function botones(lista, cols, sel, alTocar, dest) {
+  return '<div class="ops c' + (cols || 1) + '">' + lista.map((o, i) => '<button class="op' + (sel(o) ? ' sel' : '') + (dest && dest(o) ? ' dest' : '') + '" data-i="' + i + '">' + o + '</button>').join('') + '</div>';
+}
+function enlazar(cont, lista, fn) { cont.querySelectorAll('.op').forEach(b => b.onclick = () => fn(lista[Number(b.dataset.i)], b)); }
+
+const CAMPOS = {
+  rut(s, c) {
+    c.innerHTML = '<input type="text" id="in" inputmode="numeric" autocomplete="off" placeholder="12.345.678-9" maxlength="12" style="font-size:30px;text-align:center"><button class="alt" id="k">Mi RUT termina en K</button>';
+    const i = $('in'); i.value = A.rut || '';
+    i.oninput = () => { i.value = fmtRut(limpioRut(i.value).slice(0, 9)); A.rut = i.value; revisar(s); };
+    $('k').onclick = () => { const c2 = limpioRut(i.value); if (c2 && !c2.endsWith('K')) i.value = fmtRut(c2 + 'K'); A.rut = i.value; revisar(s); };
+  },
+  texto(s, c) {
+    c.innerHTML = '<input type="text" id="in" autocomplete="off" placeholder="' + (s.ph || '') + '"' + (s.num ? ' inputmode="numeric"' : '') + '>';
+    const i = $('in'); i.value = A['_' + s.id] || A[s.id] || '';
+    i.oninput = () => { A['_' + s.id] = i.value; revisar(s); };
+    i.onkeydown = e => { if (e.key === 'Enter') avanzar(s); };
+  },
+  bot(s, c) {
+    const L = s.ops();
+    c.innerHTML = botones(L, s.cols, o => A[s.id] === o);
+    enlazar(c, L, (o, b) => { A[s.id] = o; c.querySelectorAll('.op').forEach(x => x.classList.remove('sel')); b.classList.add('sel'); auto(s); });
+  },
+  multi(s, c) {
+    const L = s.ops();
+    if (L.length === 1 && !A.inst) A.inst = [L[0]];
+    A.inst = A.inst || [];
+    c.innerHTML = botones(L.map(o => '☐ ' + o), 1, () => false);
+    const pinta = () => c.querySelectorAll('.op').forEach((b, k) => { const on = A.inst.includes(L[k]); b.classList.toggle('sel', on); b.textContent = (on ? '☑ ' : '☐ ') + L[k]; });
+    c.querySelectorAll('.op').forEach((b, k) => b.onclick = () => { const o = L[k]; A.inst = A.inst.includes(o) ? A.inst.filter(x => x !== o) : A.inst.concat(o); pinta(); revisar(s); });
+    pinta();
+  },
+  fecha3(s, c) {
+    const opt = (l, v, ph) => '<option value="">' + ph + '</option>' + l.map(x => '<option' + (String(x[0]) === String(v) ? ' selected' : '') + ' value="' + x[0] + '">' + x[1] + '</option>').join('');
+    c.innerHTML = '<div class="tres"><div><label>Día</label><select id="d">' + opt(Array.from({length:31},(_,i)=>[i+1,i+1]), A.dia, 'Día') + '</select></div>' +
+      '<div><label>Mes</label><select id="m">' + opt(MESES.map((x,i)=>[i+1,x]), A.mes, 'Mes') + '</select></div>' +
+      '<div><label>Año</label><select id="a">' + opt(ANIOS.map(x=>[x,x]), A.anio, 'Año') + '</select></div></div>';
+    ['d','m','a'].forEach(k => $(k).onchange = () => { A.dia = $('d').value; A.mes = $('m').value; A.anio = $('a').value; revisar(s); });
+  },
+  fecha(s, c) {
+    c.innerHTML = '<input type="date" id="in">' + (s.opcional ? '<button class="alt" id="nose">' + s.opcional + '</button>' : '');
+    const i = $('in'); i.value = A[s.id] && A[s.id] !== '-' ? A[s.id] : '';
+    i.onchange = i.oninput = () => { A[s.id] = i.value; revisar(s); };
+    if (s.opcional) $('nose').onclick = () => { A[s.id] = '-'; i.value = ''; avanzar(s); };
+  },
+  nacion(s, c) {
+    const top = O.nac.slice(0, 7), resto = O.nac.slice(8).filter(x => x !== 'Otra');
+    const otra = A.nacio && !top.includes(A.nacio);
+    c.innerHTML = botones(top.concat('Otra nacionalidad'), 2, o => A.nacio === o || (o === 'Otra nacionalidad' && otra)) +
+      '<div id="otraBox"' + (otra ? '' : ' hidden') + '><p class="sub">Elija su nacionalidad:</p><select id="sel"><option value="">Toque aquí para elegir</option>' +
+      resto.map(x => '<option' + (A.nacio === x ? ' selected' : '') + '>' + x + '</option>').join('') + '<option' + (A.nacio === 'Otra' ? ' selected' : '') + '>Otra</option></select></div>';
+    enlazar(c, top.concat('Otra nacionalidad'), (o, b) => {
+      c.querySelectorAll('.op').forEach(x => x.classList.remove('sel')); b.classList.add('sel');
+      if (o === 'Otra nacionalidad') { $('otraBox').hidden = false; A.nacio = $('sel').value || ''; revisar(s); }
+      else { $('otraBox').hidden = true; A.nacio = o; auto(s); }
+    });
+    $('sel').onchange = () => { A.nacio = $('sel').value; revisar(s); };
+  },
+  region(s, c) {
+    const R = O.regiones, top = ['VIII - Biobío', 'XVI - Ñuble'];
+    const L = top.concat(R.filter(r => !top.includes(r)));
+    c.innerHTML = '<p class="sub">Las más comunes:</p>' + botones(top, 1, o => A.region === o, null, () => true) + '<p class="sub">Otras regiones:</p>' + botones(L.slice(2), 1, o => A.region === o);
+    const all = c.querySelectorAll('.op');
+    all.forEach((b, k) => b.onclick = () => { const o = L[k]; if (A.region !== o) A.comuna = ''; A.region = o; all.forEach(x => x.classList.remove('sel')); b.classList.add('sel'); auto(s); });
+  },
+  comuna(s, c) {
+    const L = O.comunas[A.region] || [];
+    c.innerHTML = '<p class="sub">' + A.region + '</p>' + botones(L, 2, o => A.comuna === o);
+    enlazar(c, L, (o, b) => { A.comuna = o; c.querySelectorAll('.op').forEach(x => x.classList.remove('sel')); b.classList.add('sel'); auto(s); });
+  },
+  tel(s, c) {
+    c.innerHTML = '<div class="tel"><span>+56 9</span><input type="tel" id="in" inputmode="numeric" placeholder="1234 5678" maxlength="9"></div>';
+    const i = $('in'); i.value = A['_' + s.id] || '';
+    i.oninput = () => { const d = i.value.replace(/\D/g, '').slice(0, 8); i.value = d.length > 4 ? telFmt(d) : d; A['_' + s.id] = i.value; revisar(s); };
+  },
+  correo(s, c) {
+    c.innerHTML = '<input type="email" id="in" autocomplete="email" placeholder="nombre@correo.cl"><button class="alt" id="no">No tengo correo</button>';
+    const i = $('in'); i.value = A.correo && A.correo !== 'NO' ? A.correo : '';
+    i.oninput = () => { A.correo = i.value.trim(); revisar(s); };
+    $('no').onclick = () => { A.correo = 'NO'; i.value = ''; avanzar(s); };
+  },
+  sino(s, c) {
+    const si = A[s.id] && A[s.id] !== 'NO';
+    c.innerHTML = botones([s.no, 'Sí'], 2, o => (o === s.no && A[s.id] === 'NO') || (o === 'Sí' && (si || A['_' + s.id + 'si']))) +
+      '<div id="box"' + (si || A['_' + s.id + 'si'] ? '' : ' hidden') + '><p class="sub">' + s.ph + '</p><textarea id="in"></textarea></div>';
+    const i = $('in'); i.value = si ? A[s.id] : '';
+    enlazar(c, [s.no, 'Sí'], (o, b) => {
+      c.querySelectorAll('.op').forEach(x => x.classList.remove('sel')); b.classList.add('sel');
+      if (o === s.no) { A[s.id] = 'NO'; A['_' + s.id + 'si'] = false; $('box').hidden = true; auto(s); }
+      else { A['_' + s.id + 'si'] = true; $('box').hidden = false; A[s.id] = i.value.trim(); i.focus(); revisar(s); }
+    });
+    i.oninput = () => { A[s.id] = i.value.trim(); revisar(s); };
+  },
+  parent(s, c) {
+    const L = ['Esposa','Esposo','Pareja','Madre','Padre','Hermana','Hermano','Hija','Hijo','Otro'];
+    const otro = A.parent && !L.slice(0, 9).includes(A.parent);
+    c.innerHTML = botones(L, 2, o => A.parent === o || (o === 'Otro' && otro)) + '<div id="box"' + (otro ? '' : ' hidden') + '><p class="sub">Escriba qué es de usted:</p><input type="text" id="in" placeholder="Ej: Tía, Amigo, Cuñado"></div>';
+    const i = $('in'); i.value = otro ? A.parent : '';
+    enlazar(c, L, (o, b) => {
+      c.querySelectorAll('.op').forEach(x => x.classList.remove('sel')); b.classList.add('sel');
+      if (o === 'Otro') { $('box').hidden = false; A.parent = i.value.trim(); i.focus(); revisar(s); } else { $('box').hidden = true; A.parent = o; auto(s); }
+    });
+    i.oninput = () => { A.parent = tit(i.value.trim()); revisar(s); };
+  },
+  lic(s, c) {
+    const cargo = (A._cargo || '').trim();
+    const maneja = /conduc|chofer|chófer|camion|camión|grua|grúa|tractor|operador|operadora|maquin|repart|bus|furgon|furgón|vehic|vehíc|transport|despach|montacarg|horquill|grúa|cosechador|traslad|movil|móvil|flete|reparto/i.test(cargo);
+    const L = [['SI', 'SÍ, tengo licencia'], ['NO', 'NO tengo licencia'], ['NO APLICA', 'NO APLICA (en mi trabajo no manejo)']];
+    c.innerHTML = (maneja ? '<p class="estado info" style="margin-top:0">⚠️ Por su cargo (' + cargo + ') es muy importante que nos diga si tiene licencia.</p>' : '') +
+      botones(L.map(x => x[1]), 1, o => L.some(x => x[1] === o && x[0] === A.lic), null, o => maneja && o === L[0][1]);
+    enlazar(c, L.map(x => x[1]), (o, b) => { A.lic = L.find(x => x[1] === o)[0]; c.querySelectorAll('.op').forEach(x => x.classList.remove('sel')); b.classList.add('sel'); auto(s); });
+  },
+  info(s, c) { c.innerHTML = '<p class="ayuda" style="font-size:18px">Toque "Siguiente" para continuar.</p>'; },
+  fotos(s, c) {
+    const caja = (l, t, p, svg) => '<div class="foto' + (fotos[l] ? ' ok' : '') + '" id="c' + l + '"><h3>' + t + '</h3><p>' + p + '</p>' + (fotos[l] ? '<img src="' + fotos[l] + '">' : svg) + '<label for="f' + l + '">📷 ' + (fotos[l] ? 'Cambiar foto' : 'Tomar foto') + '</label><input type="file" id="f' + l + '" accept="image/*" capture="environment"></div>';
+    const svgF = '<svg width="150" height="92" viewBox="0 0 170 104"><rect x="2" y="2" width="166" height="100" rx="10" fill="#fff" stroke="#5b3f8c" stroke-width="3"/><rect x="12" y="18" width="44" height="56" rx="4" fill="#e3dcef"/><circle cx="34" cy="38" r="11" fill="#5b3f8c"/><path d="M16 72 q18 -22 36 0" fill="#5b3f8c"/><rect x="66" y="22" width="88" height="8" rx="3" fill="#c9bfdc"/><rect x="66" y="38" width="70" height="8" rx="3" fill="#c9bfdc"/><rect x="66" y="54" width="80" height="8" rx="3" fill="#c9bfdc"/></svg>';
+    const svgR = '<svg width="150" height="92" viewBox="0 0 170 104"><rect x="2" y="2" width="166" height="100" rx="10" fill="#fff" stroke="#5b3f8c" stroke-width="3"/><rect x="12" y="16" width="146" height="8" rx="3" fill="#c9bfdc"/><rect x="12" y="32" width="120" height="8" rx="3" fill="#c9bfdc"/><rect x="12" y="48" width="134" height="8" rx="3" fill="#c9bfdc"/><g fill="#5b3f8c"><rect x="12" y="70" width="3" height="22"/><rect x="18" y="70" width="2" height="22"/><rect x="23" y="70" width="4" height="22"/><rect x="30" y="70" width="2" height="22"/><rect x="35" y="70" width="3" height="22"/><rect x="41" y="70" width="2" height="22"/></g></svg>';
+    c.innerHTML = caja('F', '1. FRENTE de la licencia', 'El lado donde está su cara', svgF) + caja('R', '2. REVERSO de la licencia', 'La parte de atrás', svgR);
+    ['F', 'R'].forEach(l => $('f' + l).onchange = async ev => {
+      const f = ev.target.files[0]; if (!f) return;
+      try { fotos[l] = await achicar(f); fotosSubidas = false; } catch (e) { marcar(false, '❌ No se pudo leer la foto. Intente de nuevo'); return; }
+      CAMPOS.fotos(s, c); revisar(s);
+    });
+  },
+  resumen(s, c) {
+    const V = visibles().filter(x => !['resumen', 'fotos', 'rutInfo'].includes(x.tipo) && x.id !== 'rutInfo');
+    c.innerHTML = '<div class="res">' + V.map(x => '<div><b>' + x.t.replace(/[¿?]/g, '') + '</b><span>' + (mostrar(x) || '—') + '<a href="#" data-id="' + x.id + '">Corregir</a></span></div>').join('') + '</div>';
+    c.querySelectorAll('a').forEach(a => a.onclick = e => { e.preventDefault(); corrigiendo = true; pos = visibles().findIndex(x => x.id === a.dataset.id); pintar(); });
+  },
+};
+function mostrar(x) {
+  switch (x.id) {
+    case 'nac': return A.dia + ' de ' + MESES[A.mes - 1] + ' de ' + A.anio;
+    case 'inst': return (A.inst || []).join(', ');
+    case 'ingreso': return A.ingreso === '-' ? 'No se acuerda' : fechaTxt(A.ingreso);
+    case 'venc': return fechaTxt(A.venc);
+    case 'tel': case 'emTel': return '+56 9 ' + (A['_' + x.id] || '');
+    case 'nombre': case 'cargo': case 'ciudad': case 'dir': case 'emNombre': case 'cuenta': return x.fmt(A['_' + x.id] || '');
+    default: return A[x.id];
+  }
+}
+const fechaTxt = v => { if (!v) return ''; const [y, m, d] = v.split('-'); return Number(d) + ' de ' + MESES[Number(m) - 1] + ' de ' + y; };
+
+const VALIDA = {
+  rut: () => { const v = A.rut || ''; const c = limpioRut(v); if (c.length < 8) return [false, '']; return rutOk(v) ? [true, '✅ RUT válido'] : [false, '❌ RUT no válido. Revise los números']; },
+  texto: s => { const v = A['_' + s.id] || ''; if (!v.trim()) return [false, '']; return s.ok(v) ? [true, '✅ Bien'] : [false, s.err(v), /\d/.test(v) || s.num ? 'mal' : 'info']; },
+  multi: () => (A.inst || []).length ? [true, '✅ Bien'] : [false, 'Marque al menos un lugar', 'info'],
+  fecha3: () => { if (!(A.dia && A.mes && A.anio)) return [false, '']; const d = new Date(A.anio, A.mes - 1, A.dia); return d.getDate() == A.dia ? [true, '✅ Bien'] : [false, '❌ Esa fecha no existe. Revise el día']; },
+  fecha: s => { const v = A[s.id]; if (!v) return [false, '']; if (v === '-') return [true, '']; const y = Number(v.slice(0, 4)); const hoy = new Date().toISOString().slice(0, 10);
+    if (s.futura) return y > 2100 || y < 2000 ? [false, '❌ Revise el año'] : [true, v < hoy ? '⚠️ Su licencia está vencida' : '✅ Bien', v < hoy ? 'info' : 'ok'];
+    return v > hoy || y < 1960 ? [false, '❌ Revise la fecha'] : [true, '✅ Bien']; },
+  nacion: () => A.nacio ? [true, '✅ ' + A.nacio] : [false, ''],
+  region: () => A.region ? [true, ''] : [false, ''],
+  comuna: () => A.comuna && (O.comunas[A.region] || []).includes(A.comuna) ? [true, ''] : [false, ''],
+  tel: s => { const d = (A['_' + s.id] || '').replace(/\D/g, ''); return d.length === 8 ? [true, '✅ +56 9 ' + telFmt(d)] : [false, d.length ? 'Faltan ' + (8 - d.length) + ' números' : '', 'info']; },
+  correo: () => { const v = A.correo || ''; if (!v) return [false, '']; if (v === 'NO') return [true, '']; return /^[^\s@]+@[^\s@]+\.[a-z]{2,}$/i.test(v) ? [true, '✅ Bien'] : [false, 'Revise su correo. Ej: nombre@correo.cl', 'info']; },
+  sino: s => { const v = A[s.id]; if (v === 'NO') return [true, '']; if (A['_' + s.id + 'si']) return v && v.length >= 3 ? [true, '✅ Bien'] : [false, 'Escriba cuál', 'info']; return [false, '']; },
+  parent: () => A.parent && RX1.test(A.parent) ? [true, ''] : [false, A.parent ? 'Escriba solo letras' : '', 'info'],
+  info: () => [true, ''],
+  fotos: () => fotos.F && fotos.R ? [true, '✅ Listas las 2 fotos'] : [false, fotos.F || fotos.R ? 'Falta una foto' : '', 'info'],
+  resumen: () => [true, ''],
+};
+
+// ---------- fotos ----------
+function achicar(file) {
+  return new Promise((ok, mal) => { const img = new Image(); img.onload = () => { const k = Math.min(1, 1600 / Math.max(img.width, img.height)); const c = document.createElement('canvas'); c.width = Math.round(img.width * k); c.height = Math.round(img.height * k); c.getContext('2d').drawImage(img, 0, 0, c.width, c.height); ok(c.toDataURL('image/jpeg', 0.82)); URL.revokeObjectURL(img.src); }; img.onerror = () => mal(new Error('img')); img.src = URL.createObjectURL(file); });
+}
+async function subirFotos() {
+  marcar(false, '⏳ Subiendo fotos, espere un momento...', 'info');
+  try {
+    for (const [l, lado] of [['F', 'Frente'], ['R', 'Reverso']]) {
+      const r = await fetch(SUBIDA, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ empresa: clave, rut: fmtRut(limpioRut(A.rut)), nombre: S[1].fmt(A._nombre || ''), lado, data: fotos[l].split(',')[1] }) });
+      const j = await r.json(); if (!j.ok) throw new Error(j.error);
+    }
+    fotosSubidas = true; return true;
+  } catch (e) { marcar(true, '❌ No se pudieron subir las fotos. Revise su internet y toque "Siguiente" de nuevo'); return false; }
+}
+
+// ---------- enviar ----------
+async function enviar() {
+  const e = EMP.e, p = new URLSearchParams(), put = (k, v) => p.append('entry.' + e[k], v);
+  const ri = O.regiones.indexOf(A.region);
+  put('nombre', S[1].fmt(A._nombre)); put('rut', fmtRut(limpioRut(A.rut)));
+  put('dia', String(A.dia)); put('mes', String(A.mes).padStart(2, '0') + ' - ' + MESES[A.mes - 1]); put('anio', String(A.anio));
+  put('nac', A.nacio); put('genero', A.genero); put('civil', A.civil);
+  A.inst.forEach(x => put('inst', x));
+  if (A.ingreso && A.ingreso !== '-') { const [y, m, d] = A.ingreso.split('-'); p.append('entry.' + e.ingreso + '_year', y); p.append('entry.' + e.ingreso + '_month', String(Number(m))); p.append('entry.' + e.ingreso + '_day', String(Number(d))); }
+  put('cargo', S.find(x => x.id === 'cargo').fmt(A._cargo));
+  put('region', A.region); put('com' + ri, A.comuna);
+  put('ciudad', S.find(x => x.id === 'ciudad').fmt(A._ciudad)); put('dir', S.find(x => x.id === 'dir').fmt(A._dir));
+  put('tel', '9 ' + A._tel); put('correo', A.correo);
+  put('lic', A.lic);
+  const pages = [0,1,2,3,4,5,6,7,8,9,10 + ri,26,27,28,29,30];
+  if (A.lic === 'SI') { put('clase', A.clase); const [y, m, d] = A.venc.split('-'); p.append('entry.' + e.venc + '_year', y); p.append('entry.' + e.venc + '_month', String(Number(m))); p.append('entry.' + e.venc + '_day', String(Number(d))); pages.push(31, 32); }
+  put('afp', A.afp); put('salud', A.salud); put('disc', A.disc); put('enf', A.enf); put('med', A.med); put('alerg', A.alerg);
+  put('camisa', A.camisa); put('pantalon', A.pantalon); put('calzado', A.calzado);
+  put('emNombre', S.find(x => x.id === 'emNombre').fmt(A._emNombre)); put('parent', A.parent); put('emTel', '9 ' + A._emTel);
+  put('tipo', A.tipo);
+  for (let k = 33; k <= 45; k++) pages.push(k);
+  if (/^Cuenta RUT/.test(A.tipo)) pages.push(46);
+  if (tieneBanco()) { put('banco', A.banco); put('cuenta', S.find(x => x.id === 'cuenta').fmt(A._cuenta)); pages.push(47, 48); }
+  p.append('pageHistory', pages.join(',')); p.append('fvv', '1');
+  marcar(false, '⏳ Enviando su inscripción...', 'info');
+  try {
+    await fetch('https://docs.google.com/forms/d/e/' + EMP.form + '/formResponse', { method: 'POST', mode: 'no-cors', body: p });
+    try { localStorage.removeItem(GUARDA); } catch (x) {}
+    $('secT').textContent = 'Inscripción enviada'; $('barra').style.width = '100%';
+    app.innerHTML = '<div class="fin"><div class="ic">✅</div><h2>¡Listo! Su inscripción fue enviada</h2><p class="ayuda" style="font-size:18px">Muchas gracias, ' + S[1].fmt(A._nombre).split(' ')[0] + '. Ya puede cerrar esta página.</p></div>';
+    hablar('Listo. Su inscripción fue enviada. Muchas gracias.');
+  } catch (x) { marcar(true, '❌ No se pudo enviar. Revise su internet y toque "Enviar" de nuevo'); }
+}
+
+// ---------- inicio ----------
+if (!EMP) { app.innerHTML = '<div class="fin"><h2 style="color:#5b3f8c">Link incompleto</h2><p class="ayuda">Escanee nuevamente el código QR de su empresa.</p></div>'; }
+else {
+  $('emp').textContent = 'Ficha de Inscripción · ' + EMP.nombre; document.title = 'Inscripción ' + EMP.nombre;
+  if (EMP.logo) { $('logo').src = EMP.logo; $('logo').hidden = false; }
+  if (A.rut && Object.keys(A).length > 2) {
+    app.innerHTML = '<div class="fin"><div class="ic">👋</div><h2 style="color:#5b3f8c">Usted ya había empezado</h2><p class="ayuda">¿Quiere seguir donde quedó?</p><div class="pie"><button class="btn" id="seguir">Sí, seguir</button></div><button class="alt" id="nuevo">Empezar de nuevo</button></div>';
+    $('seguir').onclick = () => { const V = visibles(); const k = V.findIndex(x => !valido(x)); pos = k < 0 ? V.length - 1 : k; pintar(); };
+    $('nuevo').onclick = () => { A = {}; guardar(); pos = 0; pintar(); };
+  } else pintar();
+}
+</script>
+</body>
+</html>
