@@ -427,7 +427,7 @@ else {
     $('seguir').onclick = () => { const V = visibles(); const k = V.findIndex(x => !valido(x)); pos = k < 0 ? V.length - 1 : k; pintar(); };
     $('nuevo').onclick = () => { A = {}; guardar(); pos = 0; pintar(); };
   } else {
-    app.innerHTML = '<div class="fin"><div class="ic">👋</div><h2 style="color:#5b3f8c">Bienvenido/a</h2><p class="ayuda" style="font-size:18px">Vamos a llenar su ficha paso a paso. Son 10 pasos cortos.<br>Tenga a mano su carnet y, si tiene, su licencia de conducir.<br><br>Le iremos leyendo cada pregunta en voz alta. Si no quiere escuchar, toque <b>🔊 Voz activada</b> arriba.</p><div class="pie"><button class="btn va" id="empezar">Comenzar 👉</button></div></div>';
+    app.innerHTML = '<div class="fin"><div class="ic">👋</div><h2 style="color:#5b3f8c">¡Le damos la bienvenida!</h2><p class="ayuda" style="font-size:18px">Vamos a llenar su ficha paso a paso. Son 10 pasos cortos.<br>Tenga a mano su carnet y, si tiene, su licencia de conducir.<br><br>Le iremos leyendo cada pregunta en voz alta. Si no quiere escuchar, toque <b>🔊 Voz activada</b> arriba.</p><div class="pie"><button class="btn va" id="empezar">Comenzar 👉</button></div></div>';
     $('empezar').onclick = () => pintar();
   }
   $('voz').onclick = () => { VOZ = !VOZ; try { localStorage.setItem('insc_voz', VOZ ? 'si' : 'no'); } catch (e) {} pintaVoz(); if (!VOZ) { try { speechSynthesis.cancel(); } catch (e) {} } else hablar('Voz activada'); };
