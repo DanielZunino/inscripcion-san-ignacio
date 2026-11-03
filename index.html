@@ -120,7 +120,7 @@ const S = [
  { id:'plag', sec:2, t:'¿Tiene credencial de aplicador de plaguicidas?', h:'Es la credencial que entrega la SEREMI de Salud para aplicar productos químicos. Si en su trabajo no aplica químicos, toque NO APLICA.', tipo:'plag', si: () => ['agricola', 'troncos'].includes(clave) },
  // 3 licencia (despues del cargo)
  { id:'lic', sec:3, t:'¿Tiene licencia de conducir?', tipo:'lic' },
- { id:'clase', sec:3, t:'¿Qué clase de licencia tiene?', h:'La clase aparece por delante de su licencia.', tipo:'bot', ops:() => O.clase, cols:2, si: () => A.lic === 'SI' },
+ { id:'clase', sec:3, t:'¿Qué clase de licencia tiene?', h:'La clase aparece por delante de su licencia. Si tiene más de una, márquelas todas.', tipo:'multi', ops:() => O.clase, cols:2, si: () => A.lic === 'SI' },
  { id:'venc', sec:3, t:'¿Cuándo vence su licencia?', h:'Es la fecha de "Control" que aparece en su licencia.', tipo:'fecha', futura:true, si: () => A.lic === 'SI' },
  { id:'fotos', sec:3, t:'Saque 2 fotos de su licencia', h:'Una del FRENTE (donde está su cara) y otra del REVERSO (la parte de atrás). Que se vea completa y se lean las letras.', tipo:'fotos', doc:'licencia', si: () => A.lic === 'SI' },
  // 4 donde vive
@@ -224,11 +224,13 @@ const CAMPOS = {
   },
   multi(s, c) {
     const L = s.ops();
-    if (L.length === 1 && !A.inst) A.inst = [L[0]];
-    A.inst = A.inst || [];
-    c.innerHTML = botones(L.map(o => '☐ ' + o), 1, () => false);
-    const pinta = () => c.querySelectorAll('.op').forEach((b, k) => { const on = A.inst.includes(L[k]); b.classList.toggle('sel', on); b.textContent = (on ? '☑ ' : '☐ ') + L[k]; });
-    c.querySelectorAll('.op').forEach((b, k) => b.onclick = () => { const o = L[k]; A.inst = A.inst.includes(o) ? A.inst.filter(x => x !== o) : A.inst.concat(o); pinta(); revisar(s); });
+    const id = s.id;
+    if (typeof A[id] === 'string') A[id] = A[id] ? [A[id]] : [];
+    if (L.length === 1 && !A[id]) A[id] = [L[0]];
+    A[id] = A[id] || [];
+    c.innerHTML = botones(L.map(o => '☐ ' + o), s.cols || 1, () => false);
+    const pinta = () => c.querySelectorAll('.op').forEach((b, k) => { const on = A[id].includes(L[k]); b.classList.toggle('sel', on); b.textContent = (on ? '☑ ' : '☐ ') + L[k]; });
+    c.querySelectorAll('.op').forEach((b, k) => b.onclick = () => { const o = L[k]; A[id] = A[id].includes(o) ? A[id].filter(x => x !== o) : A[id].concat(o); pinta(); revisar(s); });
     pinta();
   },
   fecha3(s, c) {
@@ -356,6 +358,7 @@ function mostrar(x) {
   switch (x.id) {
     case 'nac': return A.dia + ' de ' + MESES[A.mes - 1] + ' de ' + A.anio;
     case 'inst': return (A.inst || []).join(', ');
+    case 'clase': return [].concat(A.clase || []).join(', ');
     case 'ingreso': return A.ingreso === '-' ? 'No se acuerda' : fechaTxt(A.ingreso);
     case 'venc': return fechaTxt(A.venc);
     case 'tel': case 'emTel': return '+56 9 ' + (A['_' + x.id] || '');
@@ -368,7 +371,7 @@ const fechaTxt = v => { if (!v) return ''; const [y, m, d] = v.split('-'); retur
 const VALIDA = {
   rut: () => { const v = A.rut || ''; const c = limpioRut(v); if (c.length < 8) return [false, '']; return rutOk(v) ? [true, '✅ RUT válido'] : [false, '❌ RUT no válido. Revise los números']; },
   texto: s => { const v = A['_' + s.id] || ''; if (!v.trim()) return [false, '']; return s.ok(v) ? [true, '✅ Bien'] : [false, s.err(v), /\d/.test(v) || s.num ? 'mal' : 'info']; },
-  multi: () => (A.inst || []).length ? [true, '✅ Bien'] : [false, 'Marque al menos un lugar', 'info'],
+  multi: s => [].concat(A[s.id] || []).length ? [true, '✅ Bien'] : [false, s.id === 'clase' ? 'Marque al menos una clase' : 'Marque al menos un lugar', 'info'],
   fecha3: () => { if (!(A.dia && A.mes && A.anio)) return [false, '']; const d = new Date(A.anio, A.mes - 1, A.dia); return d.getDate() == A.dia ? [true, '✅ Bien'] : [false, '❌ Esa fecha no existe. Revise el día']; },
   fecha: s => { const v = A[s.id]; if (!v) return [false, '']; if (v === '-') return [true, '']; const y = Number(v.slice(0, 4)); const hoy = new Date().toISOString().slice(0, 10);
     if (s.futura) return y > 2100 || y < 2000 ? [false, '❌ Revise el año'] : [true, v < hoy ? '⚠️ Su licencia está vencida' : '✅ Bien', v < hoy ? 'info' : 'ok'];
@@ -418,7 +421,7 @@ async function enviar() {
   put('lic', A.lic);
   if (A.plag && PLAG[clave]) p.append('entry.' + PLAG[clave], A.plag);
   const pages = [0,1,2,3,4,5,6,7,8,9,10 + ri,26,27,28,29,30];
-  if (A.lic === 'SI') { put('clase', A.clase); const [y, m, d] = A.venc.split('-'); p.append('entry.' + e.venc + '_year', y); p.append('entry.' + e.venc + '_month', String(Number(m))); p.append('entry.' + e.venc + '_day', String(Number(d))); pages.push(31, 32); }
+  if (A.lic === 'SI') { [].concat(A.clase || []).forEach(x => put('clase', x)); const [y, m, d] = A.venc.split('-'); p.append('entry.' + e.venc + '_year', y); p.append('entry.' + e.venc + '_month', String(Number(m))); p.append('entry.' + e.venc + '_day', String(Number(d))); pages.push(31, 32); }
   put('afp', A.afp); put('salud', A.salud); put('disc', A.disc); if (A.disc === 'SI') p.append('entry.' + ({ lacteos: 1380383900, agroex: 200712895, inversiones: 464365146, agricola: 888374090, troncos: 1380383900 })[clave], S.find(x => x.id === 'discCual').fmt(A._discCual || '')); put('enf', A.enf); put('med', A.med); put('alerg', A.alerg);
   put('camisa', A.camisa); put('pantalon', A.pantalon); put('calzado', A.calzado);
   put('emNombre', S.find(x => x.id === 'emNombre').fmt(A._emNombre)); put('parent', A.parent); put('emTel', '9 ' + A._emTel);
