@@ -94,7 +94,8 @@ const MESES = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto'
 const ANIOS = []; for (let a = 2010; a >= 1940; a--) ANIOS.push(String(a));
 let VOZ = true; try { VOZ = localStorage.getItem('insc_voz') !== 'no'; } catch (e) {}
 function pintaVoz() { const b = $('voz'); b.textContent = VOZ ? '🔊 Voz activada' : '🔇 Voz apagada'; b.classList.toggle('off', !VOZ); }
-function hablar(t, forzar) { if (!VOZ && !forzar) return; try { speechSynthesis.cancel(); const u = new SpeechSynthesisUtterance(t.replace(/[^\wÁÉÍÓÚÜÑáéíóúüñ¿?¡!.,:; ]/g, ' ')); u.lang = 'es-CL'; u.rate = 0.95; speechSynthesis.speak(u); } catch (e) {} }
+const leer = t => t.replace(/\bEj\s*[:.]/g, 'por ejemplo,').replace(/\bAv\./g, 'avenida').replace(/\bRUT\b/g, 'rut').replace(/\bAFP\b/g, 'A F P').replace(/\bapp\b/gi, 'aplicación').replace(/\betc\./g, 'etcétera').replace(/\bKm\b/gi, 'kilómetro').replace(/\bN[°º]\s*/g, 'número ').replace(/\b[A-ZÁÉÍÓÚÑ]{4,}\b/g, w => w.toLowerCase());
+function hablar(t, forzar) { if (!VOZ && !forzar) return; try { speechSynthesis.cancel(); const u = new SpeechSynthesisUtterance(leer(t).replace(/[^\wÁÉÍÓÚÜÑáéíóúüñ¿?¡!.,:; ]/g, ' ')); u.lang = 'es-CL'; u.rate = 0.95; speechSynthesis.speak(u); } catch (e) {} }
 const telFmt = d => d.slice(0, 4) + ' ' + d.slice(4, 8);
 
 // ---------- pasos ----------
