@@ -50,6 +50,11 @@ input.mal,textarea.mal{border-color:var(--r);background:#fdeeee}
 .fin{text-align:center;padding:40px 6px}.fin .ic{font-size:72px}.fin h2{color:var(--v);font-size:26px}
 .creado{text-align:center;font-size:12px;color:#80868b;margin-top:30px}
 [hidden]{display:none!important}
+.btn.va{animation:pulso 1.3s infinite}
+@keyframes pulso{0%,100%{box-shadow:0 0 0 0 rgba(91,63,140,.55)}50%{box-shadow:0 0 0 12px rgba(91,63,140,0)}}
+.voz{border:2px solid var(--m);background:#fff;color:var(--m);border-radius:20px;padding:4px 12px;font-size:14px;font-family:inherit}
+.voz.off{border-color:#bdb5cb;color:var(--g)}
+.guia{font-size:17px;color:var(--m);font-weight:bold;text-align:center;margin-top:8px}
 </style>
 </head>
 <body>
@@ -57,7 +62,7 @@ input.mal,textarea.mal{border-color:var(--r);background:#fdeeee}
   <div class="top">
     <img id="logo" class="logo" alt="" hidden>
     <div class="emp" id="emp"></div>
-    <div class="sec"><span id="secT"></span><span id="secN"></span></div>
+    <div class="sec"><span id="secT"></span><button class="voz" id="voz">🔊 Voz activada</button></div>
     <div class="barra"><i id="barra"></i></div>
   </div>
   <div id="app"></div>
@@ -86,7 +91,9 @@ const fmtRut = c => c.length < 2 ? c : c.slice(0, -1).replace(/\B(?=(\d{3})+(?!\
 function rutOk(v) { const c = limpioRut(v); if (c.length < 8) return false; const b = c.slice(0, -1); return /^\d{7,8}$/.test(b) && dv(b) === c.slice(-1); }
 const MESES = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
 const ANIOS = []; for (let a = 2010; a >= 1940; a--) ANIOS.push(String(a));
-function hablar(t) { try { speechSynthesis.cancel(); const u = new SpeechSynthesisUtterance(t.replace(/[^\wÁÉÍÓÚÜÑáéíóúüñ¿?¡!.,:; ]/g, ' ')); u.lang = 'es-CL'; u.rate = 0.95; speechSynthesis.speak(u); } catch (e) {} }
+let VOZ = true; try { VOZ = localStorage.getItem('insc_voz') !== 'no'; } catch (e) {}
+function pintaVoz() { const b = $('voz'); b.textContent = VOZ ? '🔊 Voz activada' : '🔇 Voz apagada'; b.classList.toggle('off', !VOZ); }
+function hablar(t, forzar) { if (!VOZ && !forzar) return; try { speechSynthesis.cancel(); const u = new SpeechSynthesisUtterance(t.replace(/[^\wÁÉÍÓÚÜÑáéíóúüñ¿?¡!.,:; ]/g, ' ')); u.lang = 'es-CL'; u.rate = 0.95; speechSynthesis.speak(u); } catch (e) {} }
 const telFmt = d => d.slice(0, 4) + ' ' + d.slice(4, 8);
 
 // ---------- pasos ----------
@@ -154,22 +161,22 @@ function pintar() {
   if (pos >= V.length) pos = V.length - 1;
   const s = V[pos];
   $('secT').textContent = s.sec <= 10 ? 'Paso ' + s.sec + ' de 10 · ' + SECS[s.sec] : SECS[s.sec];
-  $('secN').textContent = '';
   $('barra').style.width = Math.round(100 * pos / (V.length - 1)) + '%';
   let h = '<div class="preg">' + s.t + '</div>';
   if (s.h) h += '<p class="ayuda">' + s.h + '</p>';
   h += '<button class="oir" id="oir">🔊 Escuchar</button>';
   h += '<div id="campo"></div><div class="estado" id="est"></div>';
-  h += '<div class="pie">' + (pos > 0 ? '<button class="btn sec2" id="atras">← Atrás</button>' : '') + '<button class="btn" id="sig">' + (s.tipo === 'resumen' ? 'Enviar ✅' : 'Siguiente ➜') + '</button></div>';
+  h += '<div class="pie">' + (pos > 0 ? '<button class="btn sec2" id="atras">← Atrás</button>' : '') + '<button class="btn" id="sig">' + (s.tipo === 'resumen' ? 'Enviar ✅' : 'Siguiente ➜') + '</button></div><div class="guia" id="guia"></div>';
   app.innerHTML = h;
-  $('oir').onclick = () => hablar(s.t + '. ' + (s.h || ''));
+  $('oir').onclick = () => hablar(s.t + '. ' + (s.h || ''), true);
+  hablar(s.t + '. ' + (s.h || ''));
   if ($('atras')) $('atras').onclick = () => { pos--; pintar(); };
   $('sig').onclick = () => avanzar(s);
   CAMPOS[s.tipo](s, $('campo'));
   revisar(s);
   window.scrollTo(0, 0);
 }
-function marcar(ok, msg, tipo) { const e = $('est'); e.className = 'estado ' + (tipo || (ok ? 'ok' : 'mal')); e.textContent = msg || ''; $('sig').disabled = !ok; }
+function marcar(ok, msg, tipo) { const e = $('est'); e.className = 'estado ' + (tipo || (ok ? 'ok' : 'mal')); e.textContent = msg || ''; const b = $('sig'); b.disabled = !ok; b.classList.toggle('va', ok); const g = $('guia'); if (g) g.textContent = ok ? '👇 Ahora toque "' + b.textContent.replace(/[➜✅]/g, '').trim() + '"' : ''; }
 function revisar(s) { const r = VALIDA[s.tipo] ? VALIDA[s.tipo](s) : [A[s.id] !== undefined && A[s.id] !== '', '']; marcar(r[0], r[1], r[2]); return r[0]; }
 async function avanzar(s) {
   if (!revisar(s)) return;
@@ -404,7 +411,12 @@ else {
     app.innerHTML = '<div class="fin"><div class="ic">👋</div><h2 style="color:#5b3f8c">Usted ya había empezado</h2><p class="ayuda">¿Quiere seguir donde quedó?</p><div class="pie"><button class="btn" id="seguir">Sí, seguir</button></div><button class="alt" id="nuevo">Empezar de nuevo</button></div>';
     $('seguir').onclick = () => { const V = visibles(); const k = V.findIndex(x => !valido(x)); pos = k < 0 ? V.length - 1 : k; pintar(); };
     $('nuevo').onclick = () => { A = {}; guardar(); pos = 0; pintar(); };
-  } else pintar();
+  } else {
+    app.innerHTML = '<div class="fin"><div class="ic">👋</div><h2 style="color:#5b3f8c">Bienvenido/a</h2><p class="ayuda" style="font-size:18px">Vamos a llenar su ficha paso a paso. Son 10 pasos cortos.<br>Tenga a mano su carnet y, si tiene, su licencia de conducir.<br><br>Le iremos leyendo cada pregunta en voz alta. Si no quiere escuchar, toque <b>🔊 Voz activada</b> arriba.</p><div class="pie"><button class="btn va" id="empezar">Comenzar 👉</button></div></div>';
+    $('empezar').onclick = () => pintar();
+  }
+  $('voz').onclick = () => { VOZ = !VOZ; try { localStorage.setItem('insc_voz', VOZ ? 'si' : 'no'); } catch (e) {} pintaVoz(); if (!VOZ) { try { speechSynthesis.cancel(); } catch (e) {} } else hablar('Voz activada'); };
+  pintaVoz();
 }
 </script>
 </body>
