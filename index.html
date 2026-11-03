@@ -50,6 +50,7 @@ input.mal,textarea.mal{border-color:var(--r);background:#fdeeee}
 .fin{text-align:center;padding:40px 6px}.fin .ic{font-size:72px}.fin h2{color:var(--v);font-size:26px}
 .creado{text-align:center;font-size:12px;color:#80868b;margin-top:30px}
 [hidden]{display:none!important}
+.op small{display:block;font-size:14px;font-weight:normal;margin-top:5px;opacity:.85;line-height:1.3}
 .btn.va{animation:pulso 1.3s infinite}
 @keyframes pulso{0%,100%{box-shadow:0 0 0 0 rgba(91,63,140,.55)}50%{box-shadow:0 0 0 12px rgba(91,63,140,0)}}
 .voz{border:2px solid var(--m);background:#fff;color:var(--m);border-radius:20px;padding:4px 12px;font-size:14px;font-family:inherit}
@@ -111,6 +112,7 @@ const S = [
  { id:'ingreso', sec:2, t:'¿Cuándo entró a trabajar a la empresa?', h:'Si no se acuerda, toque "No me acuerdo".', tipo:'fecha', opcional:'No me acuerdo' },
  { id:'cargo', sec:2, t:'¿Cuál es su cargo?', h:'Ej: Operario de planta, Temporero, Administrativo', tipo:'texto', ph:'Su cargo',
    ok: v => v.trim().length >= 3 && /[A-Za-zÁÉÍÓÚÑáéíóúñ]/.test(v), err: () => 'Escriba su cargo con palabras', fmt: v => v.replace(/\s+/g, ' ').trim() },
+ { id:'categoria', sec:2, t:'¿Qué tipo de contrato tiene?', h:'Si no sabe, mire su contrato o pregúntele a su jefe.', tipo:'cat' },
  // 3 licencia (despues del cargo)
  { id:'lic', sec:3, t:'¿Tiene licencia de conducir?', tipo:'lic' },
  { id:'clase', sec:3, t:'¿Qué clase de licencia tiene?', h:'La clase aparece por delante de su licencia.', tipo:'bot', ops:() => O.clase, cols:2, si: () => A.lic === 'SI' },
@@ -294,6 +296,18 @@ const CAMPOS = {
     });
     i.oninput = () => { A.parent = tit(i.value.trim()); revisar(s); };
   },
+  cat(s, c) {
+    const L = [['Indefinido (de planta)', 'Indefinido (de planta)', 'Contrato sin fecha de término. Es trabajador permanente de la empresa.'],
+      ['Plazo fijo', 'Plazo fijo', 'Contrato con fecha de término. Ej: por 3 meses o por 1 año.'],
+      ['Por obra o faena', 'Por obra o faena', 'Contrato que termina cuando se acaba una obra o un trabajo específico.'],
+      ['Temporada', 'Temporada', 'Trabaja solo durante la temporada. Ej: cosecha, packing, proceso.'],
+      ['Honorarios', 'Honorarios', 'No tiene contrato de trabajo. Entrega boleta de honorarios.'],
+      ['Factura (contratista o empresa externa)', 'Factura', 'Trabaja como contratista o para otra empresa y cobra con factura.'],
+      ['Práctica', 'Práctica', 'Es estudiante y está haciendo su práctica.'],
+      ['No sé', 'No sé', 'Toque aquí si no sabe. La empresa lo revisará.']];
+    c.innerHTML = '<div class="ops c1">' + L.map((x, i) => '<button class="op' + (A.categoria === x[0] ? ' sel' : '') + '" data-i="' + i + '" style="text-align:left">' + x[1] + '<small>' + x[2] + '</small></button>').join('') + '</div>';
+    c.querySelectorAll('.op').forEach(b => b.onclick = () => { A.categoria = L[Number(b.dataset.i)][0]; c.querySelectorAll('.op').forEach(x => x.classList.remove('sel')); b.classList.add('sel'); auto(s); });
+  },
   lic(s, c) {
     const cargo = (A._cargo || '').trim();
     const maneja = /conduc|chofer|chófer|camion|camión|grua|grúa|tractor|operador|operadora|maquin|repart|bus|furgon|furgón|vehic|vehíc|transport|despach|montacarg|horquill|grúa|cosechador|traslad|movil|móvil|flete|reparto/i.test(cargo);
@@ -378,6 +392,7 @@ async function enviar() {
   A.inst.forEach(x => put('inst', x));
   if (A.ingreso && A.ingreso !== '-') { const [y, m, d] = A.ingreso.split('-'); p.append('entry.' + e.ingreso + '_year', y); p.append('entry.' + e.ingreso + '_month', String(Number(m))); p.append('entry.' + e.ingreso + '_day', String(Number(d))); }
   put('cargo', S.find(x => x.id === 'cargo').fmt(A._cargo));
+  p.append('entry.' + ({ lacteos: 878798116, agroex: 1040322783, inversiones: 872675447, agricola: 448289609 })[clave], A.categoria);
   put('region', A.region); put('com' + ri, A.comuna);
   put('ciudad', S.find(x => x.id === 'ciudad').fmt(A._ciudad)); put('dir', S.find(x => x.id === 'dir').fmt(A._dir));
   put('tel', '9 ' + A._tel); put('correo', A.correo);
