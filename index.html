@@ -77,7 +77,9 @@ const EMP = DATA.E[clave], O = DATA.O;
 const $ = id => document.getElementById(id);
 const app = $('app');
 const GUARDA = 'insc_' + clave;
-let A = {}, pos = 0, fotos = { F: null, R: null }, fotosSubidas = false;
+const PLAG = { agricola: 928631631, troncos: 627039654 };
+let A = {}, pos = 0, FOTOS = {};
+const FT = s => FOTOS[s.doc || 'licencia'] || (FOTOS[s.doc || 'licencia'] = { F: null, R: null, ok: false });
 try { A = JSON.parse(localStorage.getItem(GUARDA) || '{}'); } catch (e) { A = {}; }
 const guardar = () => { try { localStorage.setItem(GUARDA, JSON.stringify(A)); } catch (e) {} };
 
@@ -108,17 +110,19 @@ const S = [
  { id:'nacio', sec:1, t:'¿Cuál es su nacionalidad?', h:'Toque una opción.', tipo:'nacion' },
  { id:'genero', sec:1, t:'¿Cuál es su género?', tipo:'bot', ops:() => O.genero, cols:2 },
  { id:'civil', sec:1, t:'¿Cuál es su estado civil?', tipo:'bot', ops:() => O.civil, cols:1 },
+ { id:'carnet', sec:1, t:'Saque 2 fotos de su carnet de identidad', h:'Una del FRENTE (donde está su cara) y otra del REVERSO (la parte de atrás). Que se vea completo y se lean los números.', tipo:'fotos', doc:'carnet' },
  // 2 trabajo
  { id:'inst', sec:2, t:'¿Dónde trabaja?', h:'Si trabaja en más de un lugar, márquelos todos.', tipo:'multi', ops:() => EMP.inst },
  { id:'ingreso', sec:2, t:'¿Cuándo entró a trabajar a la empresa?', h:'Si no se acuerda, toque "No me acuerdo".', tipo:'fecha', opcional:'No me acuerdo' },
  { id:'cargo', sec:2, t:'¿Cuál es su cargo?', h:'Ej: Operario de planta, Temporero, Administrativo', tipo:'texto', ph:'Su cargo',
    ok: v => v.trim().length >= 3 && /[A-Za-zÁÉÍÓÚÑáéíóúñ]/.test(v), err: () => 'Escriba su cargo con palabras', fmt: v => v.replace(/\s+/g, ' ').trim() },
  { id:'categoria', sec:2, t:'¿Qué tipo de contrato tiene?', h:'Si no sabe, mire su contrato o pregúntele a su jefe.', tipo:'cat' },
+ { id:'plag', sec:2, t:'¿Tiene credencial de aplicador de plaguicidas?', h:'Es la credencial que entrega la SEREMI de Salud para aplicar productos químicos. Si en su trabajo no aplica químicos, toque NO APLICA.', tipo:'plag', si: () => ['agricola', 'troncos'].includes(clave) },
  // 3 licencia (despues del cargo)
  { id:'lic', sec:3, t:'¿Tiene licencia de conducir?', tipo:'lic' },
  { id:'clase', sec:3, t:'¿Qué clase de licencia tiene?', h:'La clase aparece por delante de su licencia.', tipo:'bot', ops:() => O.clase, cols:2, si: () => A.lic === 'SI' },
  { id:'venc', sec:3, t:'¿Cuándo vence su licencia?', h:'Es la fecha de "Control" que aparece en su licencia.', tipo:'fecha', futura:true, si: () => A.lic === 'SI' },
- { id:'fotos', sec:3, t:'Saque 2 fotos de su licencia', h:'Una del FRENTE (donde está su cara) y otra del REVERSO (la parte de atrás). Que se vea completa y se lean las letras.', tipo:'fotos', si: () => A.lic === 'SI' },
+ { id:'fotos', sec:3, t:'Saque 2 fotos de su licencia', h:'Una del FRENTE (donde está su cara) y otra del REVERSO (la parte de atrás). Que se vea completa y se lean las letras.', tipo:'fotos', doc:'licencia', si: () => A.lic === 'SI' },
  // 4 donde vive
  { id:'region', sec:4, t:'¿En qué región vive?', h:'Toque su región.', tipo:'region' },
  { id:'comuna', sec:4, t:'¿En qué comuna vive?', h:'Toque su comuna.', tipo:'comuna' },
@@ -185,7 +189,7 @@ function marcar(ok, msg, tipo) { const e = $('est'); e.className = 'estado ' + (
 function revisar(s) { const r = VALIDA[s.tipo] ? VALIDA[s.tipo](s) : [A[s.id] !== undefined && A[s.id] !== '', '']; marcar(r[0], r[1], r[2]); return r[0]; }
 async function avanzar(s) {
   if (!revisar(s)) return;
-  if (s.tipo === 'fotos' && !fotosSubidas) { if (!(await subirFotos())) return; }
+  if (s.tipo === 'fotos' && !FT(s).ok) { if (!(await subirFotos(s))) return; }
   if (s.tipo === 'resumen') return enviar();
   guardar();
   if (corrigiendo) { const V = visibles(); const k = V.findIndex((x, i) => i > pos && !valido(x)); pos = k >= 0 ? k : V.length - 1; if (k < 0) corrigiendo = false; }
@@ -193,7 +197,7 @@ async function avanzar(s) {
   pintar();
 }
 let corrigiendo = false;
-const valido = x => x.tipo === 'fotos' ? fotosSubidas : (VALIDA[x.tipo] ? VALIDA[x.tipo](x)[0] : (A[x.id] !== undefined && A[x.id] !== ''));
+const valido = x => x.tipo === 'fotos' ? FT(x).ok : (VALIDA[x.tipo] ? VALIDA[x.tipo](x)[0] : (A[x.id] !== undefined && A[x.id] !== ''));
 const auto = s => setTimeout(() => { if (revisar(s)) avanzar(s); }, 250);
 function botones(lista, cols, sel, alTocar, dest) {
   return '<div class="ops c' + (cols || 1) + '">' + lista.map((o, i) => '<button class="op' + (sel(o) ? ' sel' : '') + (dest && dest(o) ? ' dest' : '') + '" data-i="' + i + '">' + o + '</button>').join('') + '</div>';
@@ -311,6 +315,14 @@ const CAMPOS = {
     c.innerHTML = '<div class="ops c1">' + L.map((x, i) => '<button class="op' + (A.categoria === x[0] ? ' sel' : '') + '" data-i="' + i + '" style="text-align:left">' + x[1] + '<small>' + x[2] + '</small></button>').join('') + '</div>';
     c.querySelectorAll('.op').forEach(b => b.onclick = () => { A.categoria = L[Number(b.dataset.i)][0]; c.querySelectorAll('.op').forEach(x => x.classList.remove('sel')); b.classList.add('sel'); auto(s); });
   },
+  plag(s, c) {
+    const cargo = (A._cargo || '').trim();
+    const usa = /aplic|fumig|pulveriz|tractor|quimic|químic|sanidad|fitosanit|bodeg/i.test(cargo);
+    const L = [['SI', 'SÍ, tengo credencial'], ['NO', 'NO tengo credencial'], ['NO APLICA', 'NO APLICA (no aplico químicos)']];
+    c.innerHTML = (usa ? '<p class="estado info" style="margin-top:0">⚠️ Por su cargo (' + cargo + ') es muy importante que nos diga si tiene credencial.</p>' : '') +
+      botones(L.map(x => x[1]), 1, o => L.some(x => x[1] === o && x[0] === A.plag), null, o => usa && o === L[0][1]);
+    enlazar(c, L.map(x => x[1]), (o, b) => { A.plag = L.find(x => x[1] === o)[0]; c.querySelectorAll('.op').forEach(x => x.classList.remove('sel')); b.classList.add('sel'); auto(s); });
+  },
   lic(s, c) {
     const cargo = (A._cargo || '').trim();
     const maneja = /conduc|chofer|chófer|camion|camión|grua|grúa|tractor|operador|operadora|maquin|repart|bus|furgon|furgón|vehic|vehíc|transport|despach|montacarg|horquill|grúa|cosechador|traslad|movil|móvil|flete|reparto/i.test(cargo);
@@ -321,13 +333,14 @@ const CAMPOS = {
   },
   info(s, c) { c.innerHTML = '<p class="ayuda" style="font-size:18px">Toque "Siguiente" para continuar.</p>'; },
   fotos(s, c) {
-    const caja = (l, t, p, svg) => '<div class="foto' + (fotos[l] ? ' ok' : '') + '" id="c' + l + '"><h3>' + t + '</h3><p>' + p + '</p>' + (fotos[l] ? '<img src="' + fotos[l] + '">' : svg) + '<label for="f' + l + '">📷 ' + (fotos[l] ? 'Cambiar foto' : 'Tomar foto') + '</label><input type="file" id="f' + l + '" accept="image/*" capture="environment"></div>';
+    const ft = FT(s), doc = s.doc === 'carnet' ? 'del carnet' : 'de la licencia';
+    const caja = (l, t, p, svg) => '<div class="foto' + (ft[l] ? ' ok' : '') + '" id="c' + l + '"><h3>' + t + '</h3><p>' + p + '</p>' + (ft[l] ? '<img src="' + ft[l] + '">' : svg) + '<label for="f' + l + '">📷 ' + (ft[l] ? 'Cambiar foto' : 'Tomar foto') + '</label><input type="file" id="f' + l + '" accept="image/*" capture="environment"></div>';
     const svgF = '<svg width="150" height="92" viewBox="0 0 170 104"><rect x="2" y="2" width="166" height="100" rx="10" fill="#fff" stroke="#5b3f8c" stroke-width="3"/><rect x="12" y="18" width="44" height="56" rx="4" fill="#e3dcef"/><circle cx="34" cy="38" r="11" fill="#5b3f8c"/><path d="M16 72 q18 -22 36 0" fill="#5b3f8c"/><rect x="66" y="22" width="88" height="8" rx="3" fill="#c9bfdc"/><rect x="66" y="38" width="70" height="8" rx="3" fill="#c9bfdc"/><rect x="66" y="54" width="80" height="8" rx="3" fill="#c9bfdc"/></svg>';
     const svgR = '<svg width="150" height="92" viewBox="0 0 170 104"><rect x="2" y="2" width="166" height="100" rx="10" fill="#fff" stroke="#5b3f8c" stroke-width="3"/><rect x="12" y="16" width="146" height="8" rx="3" fill="#c9bfdc"/><rect x="12" y="32" width="120" height="8" rx="3" fill="#c9bfdc"/><rect x="12" y="48" width="134" height="8" rx="3" fill="#c9bfdc"/><g fill="#5b3f8c"><rect x="12" y="70" width="3" height="22"/><rect x="18" y="70" width="2" height="22"/><rect x="23" y="70" width="4" height="22"/><rect x="30" y="70" width="2" height="22"/><rect x="35" y="70" width="3" height="22"/><rect x="41" y="70" width="2" height="22"/></g></svg>';
-    c.innerHTML = caja('F', '1. FRENTE de la licencia', 'El lado donde está su cara', svgF) + caja('R', '2. REVERSO de la licencia', 'La parte de atrás', svgR);
+    c.innerHTML = caja('F', '1. FRENTE ' + doc, 'El lado donde está su cara', svgF) + caja('R', '2. REVERSO ' + doc, 'La parte de atrás', svgR);
     ['F', 'R'].forEach(l => $('f' + l).onchange = async ev => {
       const f = ev.target.files[0]; if (!f) return;
-      try { fotos[l] = await achicar(f); fotosSubidas = false; } catch (e) { marcar(false, '❌ No se pudo leer la foto. Intente de nuevo'); return; }
+      try { ft[l] = await achicar(f); ft.ok = false; } catch (e) { marcar(false, '❌ No se pudo leer la foto. Intente de nuevo'); return; }
       CAMPOS.fotos(s, c); revisar(s);
     });
   },
@@ -366,7 +379,7 @@ const VALIDA = {
   sino: s => { const v = A[s.id]; if (v === 'NO') return [true, '']; if (A['_' + s.id + 'si']) return v && v.length >= 3 ? [true, '✅ Bien'] : [false, 'Escriba cuál', 'info']; return [false, '']; },
   parent: () => A.parent && RX1.test(A.parent) ? [true, ''] : [false, A.parent ? 'Escriba solo letras' : '', 'info'],
   info: () => [true, ''],
-  fotos: () => fotos.F && fotos.R ? [true, '✅ Listas las 2 fotos'] : [false, fotos.F || fotos.R ? 'Falta una foto' : '', 'info'],
+  fotos: s => { const ft = FT(s); return ft.F && ft.R ? [true, '✅ Listas las 2 fotos'] : [false, ft.F || ft.R ? 'Falta una foto' : '', 'info']; },
   resumen: () => [true, ''],
 };
 
@@ -374,14 +387,15 @@ const VALIDA = {
 function achicar(file) {
   return new Promise((ok, mal) => { const img = new Image(); img.onload = () => { const k = Math.min(1, 1600 / Math.max(img.width, img.height)); const c = document.createElement('canvas'); c.width = Math.round(img.width * k); c.height = Math.round(img.height * k); c.getContext('2d').drawImage(img, 0, 0, c.width, c.height); ok(c.toDataURL('image/jpeg', 0.82)); URL.revokeObjectURL(img.src); }; img.onerror = () => mal(new Error('img')); img.src = URL.createObjectURL(file); });
 }
-async function subirFotos() {
+async function subirFotos(s) {
+  const ft = FT(s);
   marcar(false, '⏳ Subiendo fotos, espere un momento...', 'info');
   try {
     for (const [l, lado] of [['F', 'Frente'], ['R', 'Reverso']]) {
-      const r = await fetch(SUBIDA, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ empresa: clave, rut: fmtRut(limpioRut(A.rut)), nombre: S[1].fmt(A._nombre || ''), lado, data: fotos[l].split(',')[1] }) });
+      const r = await fetch(SUBIDA, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ empresa: clave, rut: fmtRut(limpioRut(A.rut)), nombre: S[1].fmt(A._nombre || ''), lado, doc: s.doc || 'licencia', data: ft[l].split(',')[1] }) });
       const j = await r.json(); if (!j.ok) throw new Error(j.error);
     }
-    fotosSubidas = true; return true;
+    ft.ok = true; return true;
   } catch (e) { marcar(true, '❌ No se pudieron subir las fotos. Revise su internet y toque "Siguiente" de nuevo'); return false; }
 }
 
@@ -400,6 +414,7 @@ async function enviar() {
   put('ciudad', S.find(x => x.id === 'ciudad').fmt(A._ciudad)); put('dir', S.find(x => x.id === 'dir').fmt(A._dir));
   put('tel', '9 ' + A._tel); put('correo', A.correo);
   put('lic', A.lic);
+  if (A.plag && PLAG[clave]) p.append('entry.' + PLAG[clave], A.plag);
   const pages = [0,1,2,3,4,5,6,7,8,9,10 + ri,26,27,28,29,30];
   if (A.lic === 'SI') { put('clase', A.clase); const [y, m, d] = A.venc.split('-'); p.append('entry.' + e.venc + '_year', y); p.append('entry.' + e.venc + '_month', String(Number(m))); p.append('entry.' + e.venc + '_day', String(Number(d))); pages.push(31, 32); }
   put('afp', A.afp); put('salud', A.salud); put('disc', A.disc); if (A.disc === 'SI') p.append('entry.' + ({ lacteos: 1380383900, agroex: 200712895, inversiones: 464365146, agricola: 888374090, troncos: 1380383900 })[clave], S.find(x => x.id === 'discCual').fmt(A._discCual || '')); put('enf', A.enf); put('med', A.med); put('alerg', A.alerg);
