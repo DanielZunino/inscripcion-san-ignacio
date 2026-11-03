@@ -337,10 +337,12 @@ const CAMPOS = {
     const caja = (l, t, p, svg) => '<div class="foto' + (ft[l] ? ' ok' : '') + '" id="c' + l + '"><h3>' + t + '</h3><p>' + p + '</p>' + (ft[l] ? '<img src="' + ft[l] + '">' : svg) + '<label for="f' + l + '">📷 ' + (ft[l] ? 'Cambiar foto' : 'Tomar foto') + '</label><input type="file" id="f' + l + '" accept="image/*" capture="environment"></div>';
     const svgF = '<svg width="150" height="92" viewBox="0 0 170 104"><rect x="2" y="2" width="166" height="100" rx="10" fill="#fff" stroke="#5b3f8c" stroke-width="3"/><rect x="12" y="18" width="44" height="56" rx="4" fill="#e3dcef"/><circle cx="34" cy="38" r="11" fill="#5b3f8c"/><path d="M16 72 q18 -22 36 0" fill="#5b3f8c"/><rect x="66" y="22" width="88" height="8" rx="3" fill="#c9bfdc"/><rect x="66" y="38" width="70" height="8" rx="3" fill="#c9bfdc"/><rect x="66" y="54" width="80" height="8" rx="3" fill="#c9bfdc"/></svg>';
     const svgR = '<svg width="150" height="92" viewBox="0 0 170 104"><rect x="2" y="2" width="166" height="100" rx="10" fill="#fff" stroke="#5b3f8c" stroke-width="3"/><rect x="12" y="16" width="146" height="8" rx="3" fill="#c9bfdc"/><rect x="12" y="32" width="120" height="8" rx="3" fill="#c9bfdc"/><rect x="12" y="48" width="134" height="8" rx="3" fill="#c9bfdc"/><g fill="#5b3f8c"><rect x="12" y="70" width="3" height="22"/><rect x="18" y="70" width="2" height="22"/><rect x="23" y="70" width="4" height="22"/><rect x="30" y="70" width="2" height="22"/><rect x="35" y="70" width="3" height="22"/><rect x="41" y="70" width="2" height="22"/></g></svg>';
-    c.innerHTML = caja('F', '1. FRENTE ' + doc, 'El lado donde está su cara', svgF) + caja('R', '2. REVERSO ' + doc, 'La parte de atrás', svgR);
+    c.innerHTML = caja('F', '1. FRENTE ' + doc, 'El lado donde está su cara', svgF) + caja('R', '2. REVERSO ' + doc, 'La parte de atrás', svgR) +
+      (s.doc === 'carnet' ? '<button class="btn' + (ft.skip ? ' va' : '') + '" id="sinCarnet" style="width:100%;margin-top:4px;background:#fff;color:var(--m);border:3px solid var(--m)">' + (ft.skip ? '✅ ' : '') + 'No ando con mi carnet ahora (lo mostraré después)</button>' : '');
+    if (s.doc === 'carnet') $('sinCarnet').onclick = () => { ft.skip = true; ft.F = null; ft.R = null; ft.ok = true; CAMPOS.fotos(s, c); revisar(s); };
     ['F', 'R'].forEach(l => $('f' + l).onchange = async ev => {
       const f = ev.target.files[0]; if (!f) return;
-      try { ft[l] = await achicar(f); ft.ok = false; } catch (e) { marcar(false, '❌ No se pudo leer la foto. Intente de nuevo'); return; }
+      try { ft[l] = await achicar(f); ft.ok = false; ft.skip = false; } catch (e) { marcar(false, '❌ No se pudo leer la foto. Intente de nuevo'); return; }
       CAMPOS.fotos(s, c); revisar(s);
     });
   },
@@ -379,7 +381,7 @@ const VALIDA = {
   sino: s => { const v = A[s.id]; if (v === 'NO') return [true, '']; if (A['_' + s.id + 'si']) return v && v.length >= 3 ? [true, '✅ Bien'] : [false, 'Escriba cuál', 'info']; return [false, '']; },
   parent: () => A.parent && RX1.test(A.parent) ? [true, ''] : [false, A.parent ? 'Escriba solo letras' : '', 'info'],
   info: () => [true, ''],
-  fotos: s => { const ft = FT(s); return ft.F && ft.R ? [true, '✅ Listas las 2 fotos'] : [false, ft.F || ft.R ? 'Falta una foto' : '', 'info']; },
+  fotos: s => { const ft = FT(s); if (ft.skip) return [true, '👍 Bien. Recuerde mostrar su carnet después']; return ft.F && ft.R ? [true, '✅ Listas las 2 fotos'] : [false, ft.F || ft.R ? 'Falta una foto' : '', 'info']; },
   resumen: () => [true, ''],
 };
 
