@@ -134,6 +134,8 @@ const S = [
  { id:'salud', sec:6, t:'¿Cuál es su sistema de salud?', tipo:'bot', ops:() => O.salud, cols:2 },
  // 7 salud
  { id:'disc', sec:7, t:'¿Tiene alguna discapacidad?', h:'Esta información es confidencial y sirve para cuidarlo.', tipo:'bot', ops:() => O.sino, cols:2 },
+ { id:'discCual', sec:7, t:'¿Qué discapacidad tiene?', h:'Escríbala con sus palabras. Ej: visual, auditiva, física.', tipo:'texto', ph:'Su discapacidad',
+   ok: v => v.trim().length >= 3 && /[A-Za-zÁÉÍÓÚÑáéíóúñ]/.test(v), err: () => 'Escriba cuál es su discapacidad', fmt: v => v.replace(/\s+/g, ' ').trim(), si: () => A.disc === 'SI' },
  { id:'enf', sec:7, t:'¿Tiene alguna enfermedad crónica?', h:'Ej: hipertensión, diabetes, asma.', tipo:'sino', no:'No tengo', ph:'¿Cuál?' },
  { id:'med', sec:7, t:'¿Toma algún medicamento todos los días?', tipo:'sino', no:'No tomo', ph:'¿Cuál?' },
  { id:'alerg', sec:7, t:'¿Tiene alguna alergia?', h:'A medicamentos, alimentos o picaduras.', tipo:'sino', no:'No tengo', ph:'¿A qué?' },
@@ -342,7 +344,7 @@ function mostrar(x) {
     case 'ingreso': return A.ingreso === '-' ? 'No se acuerda' : fechaTxt(A.ingreso);
     case 'venc': return fechaTxt(A.venc);
     case 'tel': case 'emTel': return '+56 9 ' + (A['_' + x.id] || '');
-    case 'nombre': case 'cargo': case 'ciudad': case 'dir': case 'emNombre': case 'cuenta': return x.fmt(A['_' + x.id] || '');
+    case 'nombre': case 'cargo': case 'ciudad': case 'dir': case 'emNombre': case 'cuenta': case 'discCual': return x.fmt(A['_' + x.id] || '');
     default: return A[x.id];
   }
 }
@@ -400,7 +402,7 @@ async function enviar() {
   put('lic', A.lic);
   const pages = [0,1,2,3,4,5,6,7,8,9,10 + ri,26,27,28,29,30];
   if (A.lic === 'SI') { put('clase', A.clase); const [y, m, d] = A.venc.split('-'); p.append('entry.' + e.venc + '_year', y); p.append('entry.' + e.venc + '_month', String(Number(m))); p.append('entry.' + e.venc + '_day', String(Number(d))); pages.push(31, 32); }
-  put('afp', A.afp); put('salud', A.salud); put('disc', A.disc); put('enf', A.enf); put('med', A.med); put('alerg', A.alerg);
+  put('afp', A.afp); put('salud', A.salud); put('disc', A.disc); if (A.disc === 'SI') p.append('entry.' + ({ lacteos: 1380383900, agroex: 200712895, inversiones: 464365146, agricola: 888374090 })[clave], S.find(x => x.id === 'discCual').fmt(A._discCual || '')); put('enf', A.enf); put('med', A.med); put('alerg', A.alerg);
   put('camisa', A.camisa); put('pantalon', A.pantalon); put('calzado', A.calzado);
   put('emNombre', S.find(x => x.id === 'emNombre').fmt(A._emNombre)); put('parent', A.parent); put('emTel', '9 ' + A._emTel);
   put('tipo', A.tipo);
