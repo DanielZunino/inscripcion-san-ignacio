@@ -50,6 +50,11 @@ input.mal,textarea.mal{border-color:var(--r);background:#fdeeee}
 .fin{text-align:center;padding:40px 6px}.fin .ic{font-size:72px}.fin h2{color:var(--v);font-size:26px}
 .creado{text-align:center;font-size:12px;color:#80868b;margin-top:30px}
 [hidden]{display:none!important}
+.op.chk{display:flex;align-items:center;gap:14px;text-align:left;padding:18px 14px;width:100%;height:auto!important;flex:none!important;min-height:0}
+.op.chk .tick{display:block;flex:none;width:46px;height:46px;box-sizing:border-box;align-self:center;border:4px solid var(--m);border-radius:10px;background:#fff;color:var(--m);font-size:34px;line-height:38px;text-align:center;font-weight:bold;animation:lat 1.2s infinite}
+.op.chk.sel .tick{animation:none}
+.op.chk .ctx{flex:1}
+@keyframes lat{0%,100%{transform:scale(1)}50%{transform:scale(1.12)}}
 .op small{display:block;font-size:14px;font-weight:normal;margin-top:5px;opacity:.85;line-height:1.3}
 .btn.va{animation:pulso 1.3s infinite}
 @keyframes pulso{0%,100%{box-shadow:0 0 0 0 rgba(91,63,140,.55)}50%{box-shadow:0 0 0 12px rgba(91,63,140,0)}}
@@ -177,7 +182,7 @@ const S = [
  { id:'banco', sec:10, t:'¿En qué banco o app recibe el sueldo?', tipo:'bot', ops:() => OP('banco'), cols:2, si: () => tieneBanco() },
  { id:'cuenta', sec:10, t:'¿Cuál es su número de cuenta?', h:'Escriba solo números, tal como aparece en su cartola o en la app de su banco.', tipo:'texto', ph:'Número de cuenta', num:true,
    ok: v => /^\s*[0-9][0-9 -]{3,24}\s*$/.test(v), err: () => 'Escriba solo números', fmt: v => v.replace(/\s+/g, '').trim(), si: () => tieneBanco() },
- { id:'decl', sec:11, t:'¿Confirma que sus datos son verdaderos?', h:'Toque el botón para confirmar.', tipo:'bot', ops:() => ['Sí, declaro que mis datos son verdaderos y autorizo su uso para fines laborales y de seguridad en el trabajo'], cols:1, si: () => !!CFG.decl },
+ { id:'decl', sec:11, t:'¿Confirma que sus datos son verdaderos?', h:'Toque el cuadro blanco para marcarlo y luego toque Siguiente.', tipo:'check', txt:'Sí, declaro que mis datos son verdaderos y autorizo su uso para fines laborales y de seguridad en el trabajo', si: () => !!CFG.decl },
  { id:'resumen', sec:11, t:'Revise sus datos', h:'Si algo está mal, toque "Corregir". Si todo está bien, toque "Enviar".', tipo:'resumen' },
 ];
 const SECS = ['', 'Sus datos', 'Su trabajo', 'Licencia de conducir', 'Dónde vive', 'Cómo ubicarlo', 'Previsión', 'Salud', 'Tallas', 'Contacto de emergencia', 'Pago de sueldo', 'Revisar y enviar'];
@@ -241,6 +246,12 @@ const CAMPOS = {
     const L = s.ops();
     c.innerHTML = botones(L, s.cols, o => A[s.id] === o);
     enlazar(c, L, (o, b) => { A[s.id] = o; c.querySelectorAll('.op').forEach(x => x.classList.remove('sel')); b.classList.add('sel'); auto(s); });
+  },
+  check(s, c) {
+    c.innerHTML = '<button class="op chk" id="chk"><span class="tick"></span><span class="ctx">' + s.txt + '</span></button><p class="sub" id="chkAy" style="text-align:center;font-weight:bold;color:var(--m)">👆 Marque aquí</p>';
+    const b = $('chk'), pinta = () => { const on = A[s.id] === s.txt; b.classList.toggle('sel', on); b.querySelector(".tick").textContent = on ? '✔' : ''; $('chkAy').style.visibility = on ? 'hidden' : 'visible'; };
+    b.onclick = () => { A[s.id] = A[s.id] === s.txt ? '' : s.txt; pinta(); revisar(s); };
+    pinta();
   },
   multi(s, c) {
     const L = s.ops();
