@@ -430,7 +430,43 @@ const VALIDA = {
 
 // ---------- fotos ----------
 function achicar(file) {
-  return new Promise((ok, mal) => { const img = new Image(); img.onload = () => { const k = Math.min(1, 1600 / Math.max(img.width, img.height)); const c = document.createElement('canvas'); c.width = Math.round(img.width * k); c.height = Math.round(img.height * k); c.getContext('2d').drawImage(img, 0, 0, c.width, c.height); ok(c.toDataURL('image/jpeg', 0.82)); URL.revokeObjectURL(img.src); }; img.onerror = () => mal(new Error('img')); img.src = URL.createObjectURL(file); });
+  return new Promise((ok, mal) => {
+    const img = new Image();
+    img.onload = () => {
+      URL.revokeObjectURL(img.src);
+      // recorte automatico del documento (se deja proporcional, nunca se estira)
+      let x0 = 0, y0 = 0, w0 = img.width, h0 = img.height;
+      try {
+        const K = Math.min(1, 360 / Math.max(img.width, img.height)), W = Math.max(8, Math.round(img.width * K)), H = Math.max(8, Math.round(img.height * K));
+        const cv = document.createElement('canvas'); cv.width = W; cv.height = H;
+        const cx = cv.getContext('2d'); cx.drawImage(img, 0, 0, W, H);
+        const px = cx.getImageData(0, 0, W, H).data, g = new Float32Array(W * H);
+        for (let i = 0; i < W * H; i++) g[i] = px[i * 4] * 0.299 + px[i * 4 + 1] * 0.587 + px[i * 4 + 2] * 0.114;
+        const e = new Float32Array(W * H); let s = 0, s2 = 0, n = 0;
+        for (let y = 1; y < H - 1; y++) for (let x = 1; x < W - 1; x++) {
+          const i = y * W + x, v = Math.abs(g[i + 1] - g[i - 1]) + Math.abs(g[i + W] - g[i - W]);
+          e[i] = v; s += v; s2 += v * v; n++;
+        }
+        const m = s / n, sd = Math.sqrt(Math.max(0, s2 / n - m * m)), t = m + sd;
+        const col = new Float32Array(W), row = new Float32Array(H); let tot = 0;
+        for (let y = 1; y < H - 1; y++) for (let x = 1; x < W - 1; x++) if (e[y * W + x] > t) { col[x]++; row[y]++; tot++; }
+        const corte = (a, p) => { let acc = 0; for (let i = 0; i < a.length; i++) { acc += a[i]; if (acc >= tot * p) return i; } return a.length - 1; };
+        if (tot > 50) {
+          let a = corte(col, 0.01), b = corte(col, 0.99), c = corte(row, 0.01), d = corte(row, 0.99);
+          const pw = (b - a) * 0.05, ph = (d - c) * 0.05;
+          a = Math.max(0, a - pw); b = Math.min(W, b + pw); c = Math.max(0, c - ph); d = Math.min(H, d + ph);
+          const area = (b - a) * (d - c) / (W * H);
+          if (area > 0.2 && area < 0.97) { x0 = a / K; y0 = c / K; w0 = (b - a) / K; h0 = (d - c) / K; }
+        }
+      } catch (x) { x0 = 0; y0 = 0; w0 = img.width; h0 = img.height; }
+      const k = Math.min(1, 1600 / Math.max(w0, h0));
+      const c = document.createElement('canvas'); c.width = Math.round(w0 * k); c.height = Math.round(h0 * k);
+      c.getContext('2d').drawImage(img, x0, y0, w0, h0, 0, 0, c.width, c.height);
+      ok(c.toDataURL('image/jpeg', 0.86));
+    };
+    img.onerror = () => mal(new Error('img'));
+    img.src = URL.createObjectURL(file);
+  });
 }
 async function subirFotos(s) {
   const ft = FT(s);
