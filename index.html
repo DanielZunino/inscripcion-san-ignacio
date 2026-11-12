@@ -374,6 +374,7 @@ const CAMPOS = {
   },
   info(s, c) { c.innerHTML = '<p class="ayuda" style="font-size:18px">Toque "Siguiente" para continuar.</p>'; },
   fotos(s, c) {
+    cargarCV();
     const ft = FT(s), doc = s.doc === 'carnet' ? 'del carnet' : s.doc === 'aplicador' ? 'de la credencial' : 'de la licencia';
     const SIN = { carnet: 'No ando con mi carnet ahora (lo mostraré después)', licencia: 'No ando con mi licencia ahora (la mostraré después)', aplicador: 'No ando con mi credencial ahora (la mostraré después)' }[s.doc || 'licencia'];
     const caja = (l, t, p, svg) => '<div class="foto' + (ft[l] ? ' ok' : '') + '" id="c' + l + '"><h3>' + t + '</h3><p>' + p + '</p>' + (ft[l] ? '<img src="' + ft[l] + '">' : svg) + '<label for="f' + l + '">📷 ' + (ft[l] ? 'Cambiar foto' : 'Tomar foto') + '</label><input type="file" id="f' + l + '" accept="image/*" capture="environment"></div>';
@@ -429,11 +430,73 @@ const VALIDA = {
 };
 
 // ---------- fotos ----------
+// Recorte del carnet/licencia: busca el rectangulo del documento, lo endereza y lo deja proporcional (85,6 x 54 mm).
+// Si no lo encuentra con seguridad, devuelve null y la foto queda como esta (nunca se corta mal).
+function recorteCV(img) {
+  if (!window.cv || !cv.Mat) return null;
+  const k = Math.min(1, 800 / Math.max(img.width, img.height));
+  const c = document.createElement('canvas'); c.width = Math.round(img.width * k); c.height = Math.round(img.height * k);
+  c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+  const borrar = []; const M = x => { borrar.push(x); return x; };
+  let best = null;
+  try {
+    const src = M(cv.imread(c)), rgb = M(new cv.Mat()), gray = M(new cv.Mat()), hsv = M(new cv.Mat()), ch = M(new cv.MatVector());
+    cv.cvtColor(src, rgb, cv.COLOR_RGBA2RGB); cv.cvtColor(rgb, gray, cv.COLOR_RGB2GRAY); cv.cvtColor(rgb, hsv, cv.COLOR_RGB2HSV); cv.split(hsv, ch);
+    const canales = [gray, M(ch.get(1)), M(ch.get(2))], A = c.width * c.height, ker = M(cv.Mat.ones(3, 3, cv.CV_8U));
+    for (const m of canales) {
+      const g = M(new cv.Mat()); cv.GaussianBlur(m, g, new cv.Size(5, 5), 0);
+      for (const [lo, hi] of [[20, 60], [40, 120], [75, 200]]) {
+        const e = M(new cv.Mat()), cs = M(new cv.MatVector()), jer = M(new cv.Mat());
+        cv.Canny(g, e, lo, hi); cv.dilate(e, e, ker, new cv.Point(-1, -1), 2);
+        cv.findContours(e, cs, jer, cv.RETR_LIST, cv.CHAIN_APPROX_SIMPLE);
+        for (let i = 0; i < cs.size(); i++) {
+          const ct = cs.get(i), a = cv.contourArea(ct);
+          if (a >= 0.12 * A && a <= 0.97 * A) {
+            const r = cv.minAreaRect(ct), w = r.size.width, h = r.size.height;
+            if (Math.min(w, h) > 0) {
+              const ar = Math.max(w, h) / Math.min(w, h), fill = a / (w * h);
+              if (ar > 1.4 && ar < 1.8 && fill > 0.85 && (!best || a * fill > best.sc)) best = { sc: a * fill, pts: cv.RotatedRect.points(r) };
+            }
+          }
+          ct.delete();
+        }
+      }
+    }
+  } catch (x) { best = null; } finally { borrar.forEach(x => { try { x.delete(); } catch (y) {} }); }
+  if (!best) return null;
+  // esquinas en orden: arriba-izq, arriba-der, abajo-der, abajo-izq (en la foto original)
+  const P = best.pts.map(p => [p.x / k, p.y / k]);
+  const s = P.map(p => p[0] + p[1]), d = P.map(p => p[1] - p[0]);
+  const ix = (arr, f) => arr.indexOf(f(...arr));
+  let q = [P[ix(s, Math.min)], P[ix(d, Math.min)], P[ix(s, Math.max)], P[ix(d, Math.max)]];
+  const dist = (a, b) => Math.hypot(a[0] - b[0], a[1] - b[1]);
+  if (dist(q[0], q[1]) < dist(q[0], q[3])) q = [q[1], q[2], q[3], q[0]];   // documento vertical: se gira
+  const W = 1400, H = Math.round(W / 1.586);
+  const k2 = Math.min(1, 2400 / Math.max(img.width, img.height));
+  const c2 = document.createElement('canvas'); c2.width = Math.round(img.width * k2); c2.height = Math.round(img.height * k2);
+  c2.getContext('2d').drawImage(img, 0, 0, c2.width, c2.height);
+  const out = document.createElement('canvas');
+  const b2 = [];
+  try {
+    const src = cv.imread(c2); b2.push(src);
+    const de = cv.matFromArray(4, 1, cv.CV_32FC2, [].concat(...q.map(p => [p[0] * k2, p[1] * k2]))); b2.push(de);
+    const a = cv.matFromArray(4, 1, cv.CV_32FC2, [0, 0, W, 0, W, H, 0, H]); b2.push(a);
+    const T = cv.getPerspectiveTransform(de, a); b2.push(T);
+    const dst = new cv.Mat(); b2.push(dst);
+    cv.warpPerspective(src, dst, T, new cv.Size(W, H), cv.INTER_LINEAR, cv.BORDER_REPLICATE, new cv.Scalar());
+    cv.imshow(out, dst);
+  } catch (x) { return null; } finally { b2.forEach(x => { try { x.delete(); } catch (y) {} }); }
+  return out.toDataURL('image/jpeg', 0.88);
+}
+
+// OpenCV (para enderezar el documento) se carga solo cuando se llega a las fotos
+function cargarCV() { if (window._cvCarga) return; window._cvCarga = 1; const s = document.createElement('script'); s.src = 'https://cdn.jsdelivr.net/npm/@techstark/opencv-js@4.10.0-release.1/dist/opencv.js'; s.async = true; document.head.appendChild(s); }
 function achicar(file) {
   return new Promise((ok, mal) => {
     const img = new Image();
     img.onload = () => {
       URL.revokeObjectURL(img.src);
+      try { const r = recorteCV(img); if (r) { URL.revokeObjectURL(img.src); ok(r); return; } } catch (x) { /* sigue con el recorte simple */ }
       // recorte automatico del documento (se deja proporcional, nunca se estira)
       let x0 = 0, y0 = 0, w0 = img.width, h0 = img.height;
       try {
