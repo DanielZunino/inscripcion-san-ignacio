@@ -132,6 +132,7 @@ const S = [
  { id:'civil', sec:1, t:'¿Cuál es su estado civil?', tipo:'bot', ops:() => O.civil, cols:1 },
  { id:'estudios', sec:1, t:'¿Hasta qué curso estudió?', h:'Toque la opción que corresponda.', tipo:'bot', ops:() => CFG.estudios, cols:1, si: () => !!CFG.estudios },
  { id:'carnet', sec:1, t:'Saque 2 fotos de su carnet de identidad', h:'Una del FRENTE (donde está su cara) y otra del REVERSO (la parte de atrás). Que se vea completo y se lean los números.', tipo:'fotos', doc:'carnet' },
+ { id:'vencCI', sec:1, t:'¿Cuándo vence su carnet de identidad?', h:'Es la "Fecha de vencimiento" que aparece en el frente de su carnet.', tipo:'fecha', futura:true, opcional:'No sé / no lo tengo a mano' },
  // 2 trabajo
  { id:'tipoTrab', sec:2, t:'¿Usted es personal de planta o de temporada?', h:'Planta: trabaja todo el año. Temporada: solo durante la temporada.', tipo:'bot', ops:() => CFG.tipoTrab, cols:1, si: () => !!CFG.tipoTrab },
  { id:'emp', sec:2, t:'¿En qué empresa trabaja?', h: CFG.empVarias ? 'Generalmente es una. Si trabaja para más de una (por ejemplo, boletea a dos), márquelas todas.' : 'Toque su empresa.', tipo:'multi', ops:() => CFG.emp, uno: () => !CFG.empVarias, si: () => !!CFG.emp },
@@ -402,6 +403,7 @@ function mostrar(x) {
     case 'clase': case 'emp': case 'area': case 'func': return [].concat(A[x.id] || []).join(', ');
     case 'ingreso': return A.ingreso === '-' ? 'No se acuerda' : fechaTxt(A.ingreso);
     case 'venc': return fechaTxt(A.venc);
+    case 'vencCI': return A.vencCI === '-' ? 'No sabe' : fechaTxt(A.vencCI);
     case 'tel': case 'emTel': return '+56 9 ' + (A['_' + x.id] || '');
     case 'nombre': case 'cargo': case 'ciudad': case 'dir': case 'emNombre': case 'cuenta': case 'discCual': case 'trabAnt': return x.fmt(A['_' + x.id] || '');
     default: return A[x.id];
@@ -415,7 +417,7 @@ const VALIDA = {
   multi: s => [].concat(A[s.id] || []).length ? [true, '✅ Bien'] : [false, s.id === 'clase' ? 'Marque al menos una clase' : s.id === 'inst' ? 'Marque al menos un lugar' : 'Marque al menos una opción', 'info'],
   fecha3: () => { if (!(A.dia && A.mes && A.anio)) return [false, '']; const d = new Date(A.anio, A.mes - 1, A.dia); return d.getDate() == A.dia ? [true, '✅ Bien'] : [false, '❌ Esa fecha no existe. Revise el día']; },
   fecha: s => { const v = A[s.id]; if (!v) return [false, '']; if (v === '-') return [true, '']; const y = Number(v.slice(0, 4)); const hoy = new Date().toISOString().slice(0, 10);
-    if (s.futura) return y > 2100 || y < 2000 ? [false, '❌ Revise el año'] : [true, v < hoy ? '⚠️ Su licencia está vencida' : '✅ Bien', v < hoy ? 'info' : 'ok'];
+    if (s.futura) return y > 2100 || y < 2000 ? [false, '❌ Revise el año'] : [true, v < hoy ? (s.id === 'vencCI' ? '⚠️ Su carnet está vencido' : '⚠️ Su licencia está vencida') : '✅ Bien', v < hoy ? 'info' : 'ok'];
     return v > hoy || y < 1960 ? [false, '❌ Revise la fecha'] : [true, '✅ Bien']; },
   nacion: () => A.nacio ? [true, '✅ ' + A.nacio] : [false, ''],
   region: () => A.region ? [true, ''] : [false, ''],
@@ -613,7 +615,7 @@ async function enviar() {
   try {
     await fetch('https://docs.google.com/forms/d/e/' + EMP.form + '/formResponse', { method: 'POST', mode: 'no-cors', body: p });
     try { localStorage.removeItem(GUARDA); } catch (x) {}
-    try { fetch(SUBIDA, { method: 'POST', keepalive: true, headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ accion: 'registro', empresa: clave, rut: fmtRut(limpioRut(A.rut)), nombre: S[1].fmt(A._nombre || ''), estados: { licencia: A.lic || 'NO APLICA', aplicador: A.plag || 'NO APLICA' } }) }).catch(() => {}); } catch (x) {}
+    try { fetch(SUBIDA, { method: 'POST', keepalive: true, headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ accion: 'registro', empresa: clave, rut: fmtRut(limpioRut(A.rut)), nombre: S[1].fmt(A._nombre || ''), vencCI: A.vencCI && A.vencCI !== '-' ? A.vencCI : '', estados: { licencia: A.lic || 'NO APLICA', aplicador: A.plag || 'NO APLICA' } }) }).catch(() => {}); } catch (x) {}
     $('secT').textContent = 'Inscripción enviada'; $('barra').style.width = '100%';
     app.innerHTML = '<div class="fin"><div class="ic">✅</div><h2>¡Listo! Su inscripción fue enviada</h2><p class="ayuda" style="font-size:18px">Muchas gracias, ' + S[1].fmt(A._nombre).split(' ')[0] + '. Ya puede cerrar esta página.</p></div>';
     hablar('Listo. Su inscripción fue enviada. Muchas gracias.');
